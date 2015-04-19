@@ -12,6 +12,8 @@
   "laxbreak": true,
   "validthis": false,
   "globals": {
+    "Rorschach": true,
+    "ZK_STRING": true,
     "after": true,
     "afterEach": true,
     "assert": true,
