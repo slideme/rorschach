@@ -130,36 +130,6 @@ describe('Lock', function() {
     }
   });
 
-  it('should pass Rorschach test', function(done) {
-    this.timeout(10000);
-    var locks = generateLocks(client, '/test/lock/5', 500);
-    var released = 0;
-    var holds = 0;
-
-    locks.forEach(requestAcquire);
-
-    function requestAcquire(lock) {
-      lock.acquire(generateAcquireCallback(lock));
-    }
-
-    function generateAcquireCallback(lock) {
-      return function onAcquired(err) {
-        assert.ifError(err);
-        assert.equal(++holds, 1);
-        lock.release(onReleased);
-      };
-    }
-
-    function onReleased(err) {
-      assert.ifError(err);
-      assert(!--holds);
-
-      if (++released === locks.length) {
-        done();
-      }
-    }
-  });
-
   it('should re-enter already acquired lock', function(done) {
     var lock = new Lock(client, '/test/lock/6');
     assert(!lock.acquires);
