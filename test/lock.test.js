@@ -1,4 +1,3 @@
-//jshint -W030
 'use strict';
 
 var util = require('util');
@@ -32,6 +31,10 @@ describe('Lock', function() {
     client.once('connected', done);
   });
 
+  after(function(done) {
+    client.close(done);
+  });
+
   it('should instantiate with 2 arguments', function() {
     var lock = new Lock(client, '/lock');
     assert.strictEqual(lock.driver.constructor, LockDriver);
@@ -60,31 +63,49 @@ describe('Lock', function() {
     assert.equal(lock.lockName, lockName);
   });
 
-  it('should acquire lock', function(done) {
+  it('should acquire & release lock', function(done) {
     var lock = new Lock(client, '/test/lock/1');
     lock.acquire(afterAcquire);
 
     function afterAcquire(err) {
       assert.ifError(err);
-      lock.release(done);
+      assert(lock.isOwner());
+      lock.release(afterRelease);
+    }
+
+    function afterRelease(err) {
+      assert.ifError(err);
+      assert(!lock.isOwner());
+      done();
     }
   });
 
-  it('should acquire lock hold when maxLeases is set to 2', function(done) {
+  it('should acquire lock when maxLeases is set to 2', function(done) {
     var lock1 = new Lock(client, '/test/lock/2');
     var lock2 = new Lock(client, '/test/lock/2').setMaxLeases(2);
+    var count = 2;
     lock1.acquire(firstAcquired);
 
     function firstAcquired(err) {
       assert.ifError(err);
+      assert(lock1.isOwner());
 
       lock2.acquire(secondAcquired);
     }
 
     function secondAcquired(err) {
       assert.ifError(err);
-      lock1.release();
-      lock2.release(done);
+      assert(lock2.isOwner());
+      lock1.release(afterRelease);
+      lock2.release(afterRelease);
+    }
+
+    function afterRelease(err) {
+      assert.ifError(err);
+
+      if (!--count) {
+        done();
+      }
     }
   });
 
@@ -93,10 +114,10 @@ describe('Lock', function() {
     var lock2 = new Lock(client, '/test/lock/3');
     lock1.acquire(afterFirstAcquired);
 
-    var firstReleased = false;
-
     function afterFirstAcquired(err) {
       assert.ifError(err);
+      assert(lock1.isOwner());
+      assert(!lock2.isOwner());
 
       lock2.acquire(afterSecondAcquired);
       lock1.release(afterFirstReleased);
@@ -104,29 +125,13 @@ describe('Lock', function() {
 
     function afterFirstReleased(err) {
       assert.ifError(err);
-      firstReleased = true;
     }
 
     function afterSecondAcquired(err) {
       assert.ifError(err);
-      assert(firstReleased);
+      assert(!lock1.isOwner());
+      assert(lock2.isOwner());
       lock2.release(done);
-    }
-  });
-
-  it('should release lock', function(done) {
-    var lock = new Lock(client, '/test/lock/4');
-    lock.acquire(afterAcquire);
-
-    function afterAcquire(err) {
-      assert.ifError(err);
-
-      lock.release(afterRelease);
-    }
-
-    function afterRelease(err) {
-      assert.ifError(err);
-      done();
     }
   });
 
@@ -138,8 +143,7 @@ describe('Lock', function() {
 
     function afterFirstAcquire(err) {
       assert.ifError(err);
-      assert(lock.acquires, 1);
-      assert(lock.lockPath);
+      assert(lock.isOwner());
 
       lock.acquire(afterSecondAcquire);
     }
@@ -147,7 +151,7 @@ describe('Lock', function() {
     function afterSecondAcquire(err) {
       assert.ifError(err);
       assert(lock.acquires, 2);
-      assert(lock.lockPath);
+      assert(lock.isOwner());
 
       lock.release(afterFirstRelease);
     }
@@ -155,15 +159,14 @@ describe('Lock', function() {
     function afterFirstRelease(err) {
       assert.ifError(err);
       assert(lock.acquires, 1);
-      assert(lock.lockPath);
+      assert(lock.isOwner());
 
       lock.release(afterSecondRelease);
     }
 
     function afterSecondRelease(err) {
       assert.ifError(err);
-      assert(!lock.acquires);
-      assert(!lock.lockPath);
+      assert(!lock.isOwner());
 
       done();
     }
@@ -191,13 +194,15 @@ describe('Lock', function() {
     }
   });
 
-  it('should acquire lock with timeout', function() {
+  it('should acquire lock with timeout', function(done) {
     var lock = new Lock(client, '/test/lock/7');
 
     lock.acquire(1000, afterAcquire);
 
     function afterAcquire(err) {
       assert.ifError(err);
+      assert(lock.isOwner());
+      lock.release(done);
     }
   });
 
@@ -210,17 +215,14 @@ describe('Lock', function() {
 
     function afterFirstAcquire(err) {
       assert.ifError(err);
-      setTimeout(releaseFirstLock, 500);
+      assert(lock1.isOwner());
     }
 
     function afterSecondAcquire(err) {
       expect(err).to.exist;
       expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
-      done();
-    }
-
-    function releaseFirstLock() {
-      lock1.release();
+      assert(!lock2.isOwner());
+      lock1.release(done);
     }
   });
 });
