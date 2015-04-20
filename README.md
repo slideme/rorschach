@@ -39,11 +39,11 @@ __Arguments__
 
 #### `Object` delete()
 
-Return Delete builder.
+Return Delete Builder which provides convenient way to delete ZooKeeper nodes.
 
 __Returns__
 
-* `Object` Delete builder instance
+* `Object` Delete Builder instance
 
 ---
 
@@ -133,6 +133,24 @@ __Arguments__
 
 ---
 
+#### void destroy([callback])
+
+Destroy lock i.e. remove node and set `acquires` counter to zero.
+
+__Arguments__
+
+* callback `function` Optional callback function
+
+---
+
+#### `Boolean` isOwner()
+
+Check lock is owned by process.
+
+__Returns__
+
+* `Boolean`
+
 #### void release([callback])
 
 Release the lock.
@@ -157,6 +175,65 @@ __Returns__
 
 ---
 
+### ReadWriteLock
+
+[Readers-writer lock](http://en.wikipedia.org/wiki/Readers–writer_lock) implementation.
+
+#### void ReadWriteLock(client, basePath)
+
+Initialize read and write mutexes.
+
+__Arguments__
+
+* client `Rorschach` Rorschach instance
+* basePath `String` Base lock path
+
+---
+
+#### `Lock` writeMutex
+
+Write mutex.
+
+---
+
+#### `Lock` readMutex
+
+Read mutex.
+
+---
+
+#### static const `String` READ_LOCK_NAME
+
+Read lock node name.
+
+---
+
+#### static const `string` WRITE_LOCK_NAME
+
+Write lock node name.
+
+---
+
+#### `Lock` readLock()
+
+Return read mutex.
+
+__Returns__
+
+* `Lock` Read lock
+
+---
+
+#### `Lock` writeLock()
+
+Return write mutex.
+
+__Returns__
+
+* `Lock` Write lock
+
+---
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).
@@ -164,7 +241,6 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## Roadmap
 
 * Finalize implementation of distributed locks:
-    * clone of [`InterProcessReadWriteLock`](http://curator.apache.org/curator-recipes/shared-reentrant-read-write-lock.html);
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
     * clone of [`InterProcessMultiLock`](http://curator.apache.org/curator-recipes/multi-shared-lock.html);
