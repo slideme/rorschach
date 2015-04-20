@@ -9,6 +9,8 @@
     "try",
     "catch"
   ],
+  "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
+  "disallowAnonymousFunctions": true,
   "disallowMultipleLineBreaks": null,
   "disallowMultipleVarDecl": "exceptUndefined",
   "disallowSpacesInsideObjectBrackets": null,
