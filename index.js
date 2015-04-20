@@ -57,7 +57,7 @@ util.inherits(Rorschach, EventEmitter);
  * @public
  * @returns {Object} Delete builder instance
  */
-Rorschach.prototype.delete = function() {
+Rorschach.prototype.delete = function deleteBuilder() {
   return requestBuilders.delete(this);
 };
 
@@ -70,7 +70,7 @@ Rorschach.prototype.delete = function() {
  * @public
  * @param {Function} [callback] Callback function
  */
-Rorschach.prototype.close = function(callback) {
+Rorschach.prototype.close = function close(callback) {
   if (typeof callback === 'function') {
     this.zk.on('disconnected', callback);
   }
@@ -119,4 +119,5 @@ Rorschach.prototype.close = function(callback) {
 
 Rorschach.Errors = require('./lib/errors');
 Rorschach.Lock = require('./lib/Lock');
+Rorschach.ReadWriteLock = require('./lib/ReadWriteLock');
 Rorschach.LockDriver = require('./lib/LockDriver');
