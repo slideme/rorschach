@@ -244,6 +244,7 @@ See [CHANGELOG.md](CHANGELOG.md).
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
     * clone of [`InterProcessMultiLock`](http://curator.apache.org/curator-recipes/multi-shared-lock.html);
+* Implement [Leader Election](zookeeper.apache.org/doc/r3.4.6/recipes.html#sc_leaderElection) recipe.
 * Extend core class `Rorschach`.
 
 ## License
