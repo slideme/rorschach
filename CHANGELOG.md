@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.3
+
+* Fixed `ReadWriteLock#writeMutex` lock driver issue <s>[#1](https://github.com/slideme/rorschach/pull/1)</s>.
+
 ## 0.0.2
 
 * Added `#isOwner()` and `#destroy([callback])` to `Lock` class.
