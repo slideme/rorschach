@@ -1,5 +1,5 @@
 REPORTER = spec
-SOURCES = $(wildcard lib/*.js) index.js
+SOURCES = $(wildcard lib/*.js) $(wildcard test/*.js) index.js
 
 lint:
 	jshint --config .jshintrc $(SOURCES)
