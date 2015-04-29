@@ -1,12 +1,15 @@
 'use strict';
 
-var requestBuilders = require('./lib/requests');
+var builders = require('./lib/builders');
+var Errors = require('./lib/errors');
 var EventEmitter = require('events').EventEmitter;
+var Lock = require('./lib/Lock');
+var LockDriver = require('./lib/LockDriver');
+var ReadWriteLock = require('./lib/ReadWriteLock');
 var util = require('util');
 var utils = require('./lib/utils');
 var zookeeper = require('node-zookeeper-client');
 var State = zookeeper.State;
-//var slice = Array.prototype.slice;
 
 
 /*!
@@ -52,19 +55,6 @@ util.inherits(Rorschach, EventEmitter);
 
 
 /**
- * Return Delete builder.
- *
- * @public
- * @returns {Object} Delete builder instance
- */
-Rorschach.prototype.delete = function deleteBuilder() {
-  return requestBuilders.delete(this);
-};
-
-
-
-
-/**
  * Close connection to ZooKeeper.
  *
  * @public
@@ -79,45 +69,33 @@ Rorschach.prototype.close = function close(callback) {
 
 
 
-
 /**
- * Check if client is connected to ZK instance
+ * Instantiate `CreateBuilder`.
  *
  * @public
- * @returns {Boolean}
+ * @returns {CreateBuilder} Builder instance
  */
-/*Rorschach.prototype.isConnected = function() {
-  return this.zk.getState() === zookeeper.State.CONNECTED;
-};*/
+Rorschach.prototype.create = function createBuilder() {
+  return new builders.CreateBuilder(this);
+};
 
 
 
 
 /**
- * Call ZooKeeper client method only when connected
+ * Instantiate `DeleteBuilder`.
  *
- * @private
- * @param {String} methodName ZooKeeper method name
- * @param {...*} args Method arguments
+ * @public
+ * @returns {DeleteBuilder} Builder instance
  */
-/*Rorschach.prototype.whenConnected = function(methodName, args) {
-  var zk = this.zk;
-  args = slice.call(arguments, 1);
-
-  if (this.isConnected()) {
-    zk[methodName].apply(zk, args);
-  }
-  else {
-    this.once('connected', onConnected);
-  }
-
-  function onConnected() {
-    zk[methodName].apply(zk, args);
-  }
-};*/
+Rorschach.prototype.delete = function deleteBuilder() {
+  return new builders.DeleteBuilder(this);
+};
 
 
-Rorschach.Errors = require('./lib/errors');
-Rorschach.Lock = require('./lib/Lock');
-Rorschach.ReadWriteLock = require('./lib/ReadWriteLock');
-Rorschach.LockDriver = require('./lib/LockDriver');
+Rorschach.Errors = Errors;
+Rorschach.Lock = Lock;
+Rorschach.LockDriver = LockDriver;
+Rorschach.ReadWriteLock = ReadWriteLock;
+Rorschach.SortingLockDriver = ReadWriteLock.SortingLockDriver;
+Rorschach.ReadLockDriver = ReadWriteLock.ReadLockDriver;
