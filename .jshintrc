@@ -11,6 +11,9 @@
   "laxcomma": true,
   "laxbreak": true,
   "validthis": false,
+  "maxstatements": 32,
+  "maxdepth": 2,
+  "maxcomplexity": 5,
   "globals": {
     "Rorschach": true,
     "ZK_STRING": true,
@@ -21,6 +24,11 @@
     "beforeEach": true,
     "describe": true,
     "expect": true,
-    "it": true
+    "it": true,
+    "sinon": true,
+    "create": true,
+    "exists": true,
+    "getChildren": true,
+    "setData": true
   }
 }
