@@ -1,6 +1,7 @@
 //jshint -W030
 'use strict';
 
+var LockDriver = Rorschach.LockDriver;
 var ReadWriteLock = Rorschach.ReadWriteLock;
 
 function randomFromRange(min, max) {
@@ -9,19 +10,19 @@ function randomFromRange(min, max) {
 }
 
 
-describe('ReadWriteLock', function() {
+describe('ReadWriteLock', function readWriteLockTestSuite() {
   var client;
 
-  before(function(done) {
+  before(function beforeAll(done) {
     client = new Rorschach(ZK_STRING);
     client.once('connected', done);
   });
 
-  after(function(done) {
-    client.close(done);
+  after(function afterAll() {
+    client.close();
   });
 
-  it('should instantiate w/o problems', function() {
+  it('should instantiate w/o problems', function testInitialize() {
     var lock = new ReadWriteLock(client, '/test/rw-lock/1');
     expect(lock.readMutex).to.be.ok;
     expect(lock.readMutex.maxLeases).to.eql(Infinity);
@@ -29,7 +30,7 @@ describe('ReadWriteLock', function() {
     expect(lock.writeMutex.maxLeases).to.eql(1);
   });
 
-  it('should acquire read lock', function(done) {
+  it('should acquire read lock', function testAcquireReadLock(done) {
     var lock = new ReadWriteLock(client, '/test/rw-lock/2');
     var readMutex = lock.readLock();
     readMutex.acquire(afterReadAcquire);
@@ -43,7 +44,7 @@ describe('ReadWriteLock', function() {
     }
   });
 
-  it('should acquire write lock', function(done) {
+  it('should acquire write lock', function testAcquireWriteLock(done) {
     var lock = new ReadWriteLock(client, '/test/rw-lock/3');
     var writeMutex = lock.writeLock();
     writeMutex.acquire(afterWriteAcquire);
@@ -57,7 +58,7 @@ describe('ReadWriteLock', function() {
     }
   });
 
-  it('should allow write-to-read lock downgrading', function(done) {
+  it('should allow write-to-read lock downgrading', function testDowngrading(done) {
     var lock = new ReadWriteLock(client, '/test/rw-lock/4');
     var readMutex = lock.readLock();
     var writeMutex = lock.writeLock();
@@ -83,7 +84,7 @@ describe('ReadWriteLock', function() {
     }
   });
 
-  it('should allow infinite number of readers', function(done) {
+  it('should allow infinite number of readers', function testInfiniteReaders(done) {
     this.timeout(10000);
 
     var count = randomFromRange(50, 100);
@@ -128,7 +129,7 @@ describe('ReadWriteLock', function() {
     }
   });
 
-  it('should allow only one writer', function(done) {
+  it('should allow only one writer', function testOnlyOneWriter(done) {
     var writeLock = new ReadWriteLock(client, '/test/rw-lock/6').writeLock();
     var readLock = new ReadWriteLock(client, '/test/rw-lock/6').readLock();
 
@@ -156,5 +157,35 @@ describe('ReadWriteLock', function() {
       expect(writeLock.isOwner()).to.be.false;
       readLock.release(done);
     }
+  });
+
+  describe('SortingLockDriver', function sortingLockDriverTestSuite() {
+    var driver = new ReadWriteLock.SortingLockDriver();
+
+    it('should fix read-lock node name', function testFixForSortingReadLock() {
+      var number = '0000000001';
+      var nodeName = ReadWriteLock.READ_LOCK_NAME + number;
+      var ret = driver.fixForSorting(nodeName);
+      expect(ret).to.eql(number);
+    });
+
+    it('should fix write-lock node name', function testFixForSortingWriteLock() {
+      var number = '0000000002';
+      var nodeName = ReadWriteLock.WRITE_LOCK_NAME + number;
+      var ret = driver.fixForSorting(nodeName);
+      expect(ret).to.eql(number);
+    });
+  });
+
+  describe('ReadLockDriver', function readLockDriverTestSuite() {
+    var readLock = new ReadWriteLock(client, '/test/rw-lock/7').readLock();
+
+    it('should return error if node is not in list', function testErrorGetsTheLock() {
+      var nodes = ['read-1', 'read-2', 'read-3', 'read-4'];
+      var node = 'read-5';
+      var ret = readLock.driver.getsTheLock(nodes, node);
+      var err = LockDriver.validateNodeIndex(node, -1);
+      expect(ret.error).to.eql(err);
+    });
   });
 });

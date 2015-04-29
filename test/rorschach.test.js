@@ -1,15 +1,12 @@
 'use strict';
 
-describe('Rorschach', function() {
-  it('should initialize and connect', function(done) {
+describe('Rorschach', function rorschachTestSuite() {
+  it('should connect and disconnect w/o problems', function testConnectClose(done) {
     var client = new Rorschach(ZK_STRING);
-    client.on('connected', done);
-  });
+    client.on('connected', onConnected);
 
-  it('should close client with callback', function(done) {
-    var client = new Rorschach(ZK_STRING);
-    client.on('connected', function onConnected() {
+    function onConnected() {
       client.close(done);
-    });
+    }
   });
 });
