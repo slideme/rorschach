@@ -26,7 +26,7 @@ TODO
 
 ### Rorschach
 
-#### void Rorschach(connectionString, [zkOptions])
+#### Rorschach(connectionString, [zkOptions])
 
 Create instance.
 
@@ -37,13 +37,13 @@ __Arguments__
 
 ---
 
-#### `Object` delete()
+#### `CreateBuilder` create()
 
-Return Delete Builder which provides convenient way to delete ZooKeeper nodes.
+Instantiate create operation builder.
 
 __Returns__
 
-* `Object` Delete Builder instance
+* `CreateBuilder` Builder instance
 
 ---
 
@@ -54,6 +54,126 @@ Close connection to ZooKeeper.
 __Arguments__
 
 * callback `function` Callback function
+
+---
+
+#### `DeleteBuilder` delete()
+
+Instantiate delete operation builder.
+
+__Returns__
+
+* `DeleteBuilder` Builder instance
+
+---
+
+### CreateBuilder
+
+#### `CreateBuilder` creatingParentsIfNeeded()
+
+If path create operation will receive `NO_NODE` error then builder will make
+an attempt to create parent nodes.
+
+__Returns__
+
+* `CreateBuilder`
+
+---
+
+#### void forPath(path, [data], callback)
+
+Execute create op.
+
+__Arguments__
+
+* path `String` Path to znode
+* data `Buffer` ZNode data to set Default: `null`
+* callback `function` Callback function: <code>(err, path)</code>
+
+---
+
+#### `CreateBuilder` withACL(acls)
+
+Set ACLs.
+
+__Arguments__
+
+* acls `Array.<ACL>`
+
+__Returns__
+
+* `CreateBuilder`
+
+---
+
+#### `CreateBuilder` withMode(mode)
+
+Set create mode.
+
+__Arguments__
+
+* mode `Number` CreateMode
+
+__Returns__
+
+* `CreateBuilder`
+
+---
+
+#### `CreateBuilder` withProtection()
+
+See [this](https://curator.apache.org/apidocs/org/apache/curator/framework/api/CreateBuilder.html#withProtection--) page for explanation.
+
+__Returns__
+
+* `CreateBuilder`
+
+---
+
+### DeleteBuilder
+
+#### `DeleteBuilder` deleteChildrenIfNeeded()
+
+If delete operation receives `NOT_EMPTY` error then make an attempt to delete child nodes.
+
+__Returns__
+
+* `DeleteBuilder`
+
+---
+
+#### void forPath(path, callback)
+
+Execute delete.
+
+__Arguments__
+
+* path `String` Node path
+* callback `function` Callback function: <code>(err)</code>
+
+---
+
+#### `DeleteBuilder` guaranteed()
+
+Mark delete op. as guaranteed.
+
+__Returns__
+
+* `DeleteBuilder`
+
+---
+
+#### `DeleteBuilder` withVersion(version)
+
+Set node version to delete.
+
+__Arguments__
+
+* version `Number`
+
+__Returns__
+
+* `DeleteBuilder`
 
 ---
 
@@ -109,7 +229,7 @@ Default lock node name.
 
 ---
 
-#### void Lock(client, basePath, [lockName], [lockDriver])
+#### Lock(client, basePath, [lockName], [lockDriver])
 
 Distributed lock implementation
 
@@ -179,7 +299,7 @@ __Returns__
 
 [Readers-writer lock](http://en.wikipedia.org/wiki/Readers–writer_lock) implementation.
 
-#### void ReadWriteLock(client, basePath)
+#### ReadWriteLock(client, basePath)
 
 Initialize read and write mutexes.
 
