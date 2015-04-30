@@ -20,7 +20,45 @@ While _Curator is a ZooKeeper Keeper, Rorschach is a ZooKeeper Watchman_.
 
 ## Example
 
-TODO
+```javascript
+'use strict';
+
+var Rorschach = require('rorschach');
+var zookeeper = require('node-zookeeper-client');
+
+var ACL = zookeeper.ACL;
+var CreateMode = zookeeper.CreateMode;
+
+var Lock = Rorschach.Lock;
+var ReadWriteLock = Rorschach.ReadWriteLock;
+
+var client = new Rorschach('127.0.0.1:2181');
+
+client.on('connected', doTheWork);
+function doTheWork() {
+  client.create().withMode(CreateMode.EPHEMERAL).withACL(ACL.READ_ACL_UNSAFE).forPath('/a', /*afterCreate(err, path)*/);
+  client.create().withProtection().creatingParentsIfNeeded().forPath('/my/cool/znode/foo/bar', /*afterCreate(err, path)*/);
+  client.delete().deleteChildrenIfNeeded().guaranteed().forPath('/my/cool/znode', /*afterDelete(err)*/)
+
+  var lock = new Lock(client, '/my/znodes/locks/myResource');
+  lock.acquire(500, function afterAcquire(err) {
+    // handle error
+
+    // do the work with `myResource`
+
+    lock.release(/*callback(err)*/);
+  });
+
+  var rwLock = new ReadWriteLock(client, '/my/znodes/locks/anotherResource');
+  rwLock.writeLock().acquire(1000, function afterWriteAcquire(err) {
+    // handle error
+
+    // update `anotherResource`
+
+    rwLock.writeLock().release(/*callback(err)*/);
+  });
+}
+```
 
 ## API
 
