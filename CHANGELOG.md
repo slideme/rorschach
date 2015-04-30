@@ -6,7 +6,8 @@
 * Modified `Rorschach#delete()` and implemented `DeleteBuilder`;
 * Fixed `Lock#acquire()` issue which caused calling of callback twice and more times;
 * Fixed `ReadLockDriver#getsTheLock()` index validation issue;
-* Added more tests for full code coverage.
+* Added more tests for full code coverage;
+* Added example code to [README.md](README.md).
 
 ## 0.0.3
 
