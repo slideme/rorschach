@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0
+
+* Added `Rorschach#create()` and implemented `CreateBuilder`;
+* Modified `Rorschach#delete()` and implemented `DeleteBuilder`;
+* Fixed `Lock#acquire()` issue which caused calling of callback twice and more times;
+* Fixed `ReadLockDriver#getsTheLock()` index validation issue;
+* Added more tests for full code coverage.
+
 ## 0.0.3
 
 * Fixed `ReadWriteLock#writeMutex` lock driver issue <s>[#1](https://github.com/slideme/rorschach/pull/1)</s>.
