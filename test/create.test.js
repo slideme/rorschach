@@ -59,7 +59,7 @@ describe('CreateBuilder', function createTestSuite() {
     }
   });
 
-  it('should create node with data', function testUsualCase(done) {
+  it('should create node with data', function testWithData(done) {
     var path = '/test/create/12';
     var buf = new Buffer('some data');
     client.create().forPath(path, buf, afterCreate);
@@ -73,7 +73,7 @@ describe('CreateBuilder', function createTestSuite() {
 
     function handleGetDataResult(err, data) {
       assert.ifError(err);
-      expect(data.equals(buf)).to.be.true;
+      expect(data.toString('utf8')).to.eql(buf.toString('utf8'));
       done();
     }
   });
