@@ -33,11 +33,15 @@
     "node": ">= 0.10.0"
   },
   "files": [
+    ".jscsrc",
+    ".jshintrc",
     "CHANGELOG.md",
     "LICENSE.md",
+    "Makefile",
     "README.md",
     "index.js",
-    "lib/"
+    "lib/",
+    "test/"
   ],
   "scripts": {
     "test": "make test",
