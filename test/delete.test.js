@@ -10,7 +10,11 @@ describe('DeleteBuilder', function deleteTestSuite() {
   var zk;
 
   before(function beforeAll(done) {
-    client = new Rorschach(ZK_STRING);
+    client = new Rorschach(ZK_STRING, {
+      retryPolicy: {
+        maxAttempts: 0
+      }
+    });
     zk = client.zk;
     client.once('connected', done);
   });

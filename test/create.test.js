@@ -13,7 +13,12 @@ describe('CreateBuilder', function createTestSuite() {
   var zkClient;
 
   before(function beforeAll(done) {
-    client = new Rorschach(ZK_STRING);
+    client = new Rorschach(ZK_STRING, {
+      retryPolicy: {
+        maxAttempts: 0,
+        codes: []
+      }
+    });
     zkClient = client.zk;
     client.once('connected', done);
   });
