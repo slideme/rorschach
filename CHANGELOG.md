@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+* Implemented `RetryPolicy` to control Rorschach behavior in case of operational errors;
+* Added `Rorschach#retryLoop()` to gain more control over performed operations.
+
 ## 0.1.0
 
 * Added `Rorschach#create()` and implemented `CreateBuilder`;
