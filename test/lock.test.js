@@ -236,7 +236,6 @@ describe('Lock', function lockTestSuite() {
       expect(err).to.exist;
       expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
       assert(!lock2.isOwner());
-      lock2.release();
       lock1.release(done);
     }
   });
