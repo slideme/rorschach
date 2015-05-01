@@ -64,14 +64,27 @@ function doTheWork() {
 
 ### Rorschach
 
-#### Rorschach(connectionString, [zkOptions])
+#### Rorschach(connectionString, [options])
 
 Create instance.
 
 __Arguments__
 
-* connectionString `String` ZooKeeper connection string.
-* zkOptions `Object` ZooKeeper client options.
+* connectionString `String` ZooKeeper connection string
+* options `Object` Options:
+    * retryPolicy `Object|RetryPolicy` RetryPolicy instance or options
+    * zookeeper `Object` ZooKeeper client options
+
+---
+
+
+#### void close([callback])
+
+Close connection to ZooKeeper.
+
+__Arguments__
+
+* callback `function` Callback function
 
 ---
 
@@ -85,16 +98,6 @@ __Returns__
 
 ---
 
-#### void close([callback])
-
-Close connection to ZooKeeper.
-
-__Arguments__
-
-* callback `function` Callback function
-
----
-
 #### `DeleteBuilder` delete()
 
 Instantiate delete operation builder.
@@ -105,7 +108,51 @@ __Returns__
 
 ---
 
+### RetryPolicy (Rorschach.RetryPolicy)
+
+Retry policy controls behavior of Rorschach in case of operational errors.
+
+#### RetryPolicy([options])
+
+Instantiate policy.
+
+__Arguments__
+
+* options `Object` Options:
+    * maxAttempts `Number` Max number of attempts
+    * codes `Array.<String>|function` Error codes or error validation function
+
+---
+
+#### static const `Number` DEFAULT_MAX_ATTEMPTS
+
+Default number of operation attempts.
+
+---
+
+#### static const `Array.<Number>` DEFAULT_RETRYABLE_ERRORS
+
+Default codes of errors allowing re-try in case of no. of attempts < maxRetries.
+
+---
+
+#### `Boolean` isRetryable(err)
+
+Check if error is retryable.
+
+__Arguments__
+
+* err `Error|Exception` ZooKeeper client error
+
+__Returns__
+
+* `Boolean`
+
+---
+
 ### CreateBuilder
+
+Create request builder.
 
 #### `CreateBuilder` creatingParentsIfNeeded()
 
@@ -170,6 +217,8 @@ __Returns__
 
 ### DeleteBuilder
 
+Delete request builder.
+
 #### `DeleteBuilder` deleteChildrenIfNeeded()
 
 If delete operation receives `NOT_EMPTY` error then make an attempt to delete child nodes.
@@ -215,7 +264,7 @@ __Returns__
 
 ---
 
-### Lock
+### Lock (Rorschach.Lock)
 
 Distributed re-entrant lock.
 
@@ -333,7 +382,7 @@ __Returns__
 
 ---
 
-### ReadWriteLock
+### ReadWriteLock (Rorschach.ReadWriteLock)
 
 [Readers-writer lock](http://en.wikipedia.org/wiki/Readers–writer_lock) implementation.
 
