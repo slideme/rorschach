@@ -1,4 +1,5 @@
 /*jshint -W030*/
+/*globals testPath*/
 'use strict';
 
 var util = require('util');
@@ -16,6 +17,7 @@ util.inherits(StubLockDriver, LockDriver);
 describe('Lock', function lockTestSuite() {
   var client;
   var sandbox;
+  var suitePath = '/test/lock';
 
   before(function beforeAll(done) {
     client = new Rorschach(ZK_STRING);
@@ -365,6 +367,41 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
+  it('should return delete error instead of acquire error if it happens', function testErrorDeleteNode(done) {
+    var ourPath = testPath(suitePath, 16);
+    var lock = new Lock(client, ourPath);
+    var stubGetChildren = sandbox.stub(client.zk, 'getChildren');
+    var getChildrenError = new Exception(Exception.NOT_EMPTY, 'getChildren() error', TypeError);
+    stubGetChildren.callsArgWith(1, getChildrenError);
+    var stubRemove = sandbox.stub(client.zk, 'remove', removeStub);
+    var removeError = new Exception(Exception.NO_NODE, 'remove() error', TypeError);
+
+    lock.acquire(afterAcquire);
+
+    function removeStub(path, version, callback) {
+      stubGetChildren.restore();
+      stubRemove.restore();
+
+      // to clear nodes
+      client.zk.remove(path, version, afterRealDelete);
+
+      function afterRealDelete(err) {
+        if (err) {
+          callback(err);
+        }
+        else {
+          callback(removeError);
+        }
+      }
+    }
+
+    function afterAcquire(err) {
+      expect(err.message).to.equal(removeError.message);
+      expect(err.getCode()).to.equal(removeError.getCode())
+      done();
+    }
+  });
+
   it('should try acquire if watched node deleted before getData()', function testGetData(done) {
     var basePath = '/test/lock/14';
     var stub = sandbox.stub(client.zk, 'getData', getDataStub);
@@ -392,6 +429,42 @@ describe('Lock', function lockTestSuite() {
       assert.ifError(err);
       expect(lock2.isOwner()).to.be.true;
       lock2.release(done);
+    }
+  });
+
+  it('should not proceed if already exited #1', function testExitAfterCreate(done) {
+    var ourPath = testPath(suitePath, 15);
+    var lock = new Lock(client, ourPath);
+    lock.acquire(1, afterAcquire);
+
+    function afterAcquire(err) {
+      expect(err).to.exist;
+      expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
+      done();
+    }
+  });
+
+  it('should not proceed if already exited #2', function testExitAfterGetChildren(done) {
+    var ourPath = testPath(suitePath, 15);
+    var lock = new Lock(client, ourPath);
+    var stub = sandbox.stub(client.zk, 'getChildren', getChildrenStub);
+
+    lock.acquire(50, afterAcquire);
+
+    function getChildrenStub(path, callback) {
+      stub.restore();
+
+      setTimeout(delayed, 60);
+
+      function delayed() {
+        client.zk.getChildren(path, callback)
+      }
+    }
+
+    function afterAcquire(err) {
+      expect(err).to.exist;
+      expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
+      done();
     }
   });
 });
