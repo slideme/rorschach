@@ -44,6 +44,30 @@ describe('Rorschach', function rorschachTestSuite() {
     close(client);
   });
 
+  it('should emit \'error\' event when operation fails', function testEventError() {
+    var client = new Rorschach('0.1.2.3:2181');
+    var error;
+
+    client.on('error', onerror);
+    client.getData().forPath('/missing/path/on/missing/server', onerror);
+
+    function onerror(err) {
+      if (error) {
+        expect(error).to.equal(err);
+      }
+      else {
+        error = err;
+      }
+    }
+
+    try {
+      client.close();
+    }
+    catch (ex) {
+      // do nothing
+    }
+  });
+
   describe('retryLoop()', function retryLoopTestSuite() {
     it('should catch error and validate it', function testErrorCatch() {
       var err = new Error('Stub error');

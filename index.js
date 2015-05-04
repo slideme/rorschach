@@ -132,6 +132,7 @@ Rorschach.prototype.getData = function getData() {
  * @param {Function} callback Callback function
  */
 Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
+  var self = this;
   var attempts = 0;
   var policy = this.retryPolicy;
 
@@ -151,10 +152,9 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
       var args = [].slice.call(arguments, 0);
       callback.apply(null, args);
     }
-    else if (attempts >= policy.maxAttempts) {
-      callback(err);
-    }
-    else if (!policy.isRetryable(err)) {
+    else if (attempts >= policy.maxAttempts || !policy.isRetryable(err)) {
+      emitError(err);
+
       callback(err);
     }
     else {
@@ -162,6 +162,11 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
     }
   }
 
+  function emitError(err) {
+    if (EventEmitter.listenerCount(self, 'error')) {
+      self.emit('error', err);
+    }
+  }
   exec();
 };
 
