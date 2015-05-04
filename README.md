@@ -199,6 +199,16 @@ __Returns__
 
 ---
 
+#### `GetChildrenBuilder` getChildren()
+
+Instantiate get children builder.
+
+__Returns__
+
+* `GetChildrenBuilder` Builder instance
+
+---
+
 #### `GetDataBuilder` getData()
 
 Instantiate get data builder.
@@ -361,6 +371,35 @@ __Arguments__
 __Returns__
 
 * `DeleteBuilder`
+
+---
+
+### GetChildrenBuilder
+
+Get children request builder.
+
+#### void forPath(path, callback)
+
+Execute getChildren().
+
+__Arguments__
+
+* path `String` Node path
+* callback `function` Callback function: <code>(err, data, stat)</code>
+
+---
+
+#### `GetChildrenBuilder` usingWatcher(watcher)
+
+Add watcher to operation request.
+
+__Arguments__
+
+* watcher `function` Watch function: <code>(event)</code>
+
+__Returns__
+
+* `GetChildrenBuilder`
 
 ---
 

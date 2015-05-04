@@ -1,4 +1,5 @@
 
+var async = require('async');
 assert = require('chai').assert;
 expect = require('chai').expect;
 sinon = require('sinon');
@@ -18,6 +19,42 @@ create = function create(zk, path, data, callback) {
     assert.ifError(err);
 
     callback(nodePath);
+  }
+};
+
+
+createPaths = function createPaths(zk, paths, cb) {
+  async.eachSeries(paths, createPath, cb);
+
+  function createPath(path, cb) {
+    zk.create(path, afterCreate);
+
+    function afterCreate(err) {
+      if (err && err.getCode() !== Rorschach.Exception.NODE_EXISTS) {
+        cb(err);
+      }
+      else {
+        cb();
+      }
+    }
+  }
+};
+
+
+deletePaths = function deletePaths(zk, paths, cb) {
+  async.eachSeries(paths, deletePath, cb);
+
+  function deletePath(path, cb) {
+    zk.remove(path, -1, afterCreate);
+
+    function afterCreate(err) {
+      if (err && err.getCode() !== Rorschach.Exception.NO_NODE) {
+        cb(err);
+      }
+      else {
+        cb();
+      }
+    }
   }
 };
 
