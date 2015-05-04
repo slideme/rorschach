@@ -199,6 +199,16 @@ __Returns__
 
 ---
 
+#### `ExistsBuilder` exists()
+
+Instantiate exists operation builder.
+
+__Returns__
+
+* `ExistsBuilder` Builder instance
+
+---
+
 #### `GetChildrenBuilder` getChildren()
 
 Instantiate get children builder.
@@ -371,6 +381,35 @@ __Arguments__
 __Returns__
 
 * `DeleteBuilder`
+
+---
+
+### ExistsBuilder
+
+Exists request builder.
+
+#### void forPath(path, callback)
+
+Execute exists().
+
+__Arguments__
+
+* path `String` Node path
+* callback `function` Callback function: <code>(err, exists, stat)</code>
+
+---
+
+#### `ExistsBuilder` usingWatcher(watcher)
+
+Add watcher to operation request.
+
+__Arguments__
+
+* watcher `function` Watch function: <code>(event)</code>
+
+__Returns__
+
+* `ExistsBuilder`
 
 ---
 
