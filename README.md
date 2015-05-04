@@ -36,22 +36,41 @@ var ReadWriteLock = Rorschach.ReadWriteLock;
 var client = new Rorschach('127.0.0.1:2181');
 
 client.on('connected', doTheWork);
-function doTheWork() {
-  client.create().withMode(CreateMode.EPHEMERAL).withACL(ACL.READ_ACL_UNSAFE).forPath('/a', /*afterCreate(err, path)*/);
-  client.create().withProtection().creatingParentsIfNeeded().forPath('/my/cool/znode/foo/bar', /*afterCreate(err, path)*/);
-  client.delete().deleteChildrenIfNeeded().guaranteed().forPath('/my/cool/znode', /*afterDelete(err)*/);
+client.on('error', onerror);
 
-  client.getData().usingWatcher(function watcher(event) {
-    if (event.getType() === Event.NODE_DELETED) {
-      // handle deleted
-    }
-    else if (event.getType() === Event.NODE_DATA_CHANGED) {
-      // handle data change
-    }
-    else {
-      console.warn('Wow, really?');
-    }
-  }).forPath('/some/path', /*afterGetData(err, data, stat)*/);
+function doTheWork() {
+  client
+    .create()
+    .withMode(CreateMode.EPHEMERAL)
+    .withACL(ACL.READ_ACL_UNSAFE)
+    .forPath('/a', /*afterCreate(err, path)*/);
+
+  client
+   .create()
+   .withProtection()
+   .creatingParentsIfNeeded()
+   .forPath('/my/cool/znode/foo/bar', /*afterCreate(err, path)*/);
+
+  client
+   .delete()
+   .deleteChildrenIfNeeded()
+   .guaranteed()
+   .forPath('/my/cool/znode', /*afterDelete(err)*/);
+
+  client
+   .getData()
+   .usingWatcher(function watcher(event) {
+     if (event.getType() === Event.NODE_DELETED) {
+       // handle deleted
+      }
+      else if (event.getType() === Event.NODE_DATA_CHANGED) {
+        // handle data change
+      }
+      else {
+        console.warn('Wow, really?');
+      }
+    })
+    .forPath('/some/path', /*afterGetData(err, data, stat)*/);
 
   var lock = new Lock(client, '/my/znodes/locks/myResource');
   lock.acquire(500, function afterAcquire(err) {
@@ -71,6 +90,11 @@ function doTheWork() {
     rwLock.writeLock().release(/*callback(err)*/);
   });
 }
+
+function onerror(err) {
+  console.warn('[Error: %d]: %s', err.getCode(), err.stack);
+}
+
 ```
 
 ## API
@@ -99,6 +123,39 @@ function watcher(event) {
 }
 ```
 
+#### Event: `connected`
+
+```javascript
+function onConnected() { }
+```
+
+Emitted when connection to ZooKeeper server is established.
+
+#### Event: `connectionStateChanged`
+
+```javascript
+function onStateChanged(state) {
+  if (state === Rorschach.State.SYNC_CONNECTED) {
+    console.info('Let\'s rock!');
+  }
+  /* else if ... */
+}
+```
+
+Emitted whenever ZooKeeper client connection state changes. The only argument is state which is one of the [`Rorschach.State.*`](https://github.com/alexguan/node-zookeeper-client#state) constants.
+
+P.S.: at the moment of writing, there are typos in mentioned documentation and actual state names are available [here](https://github.com/alexguan/node-zookeeper-client/blob/master/lib/State.js#L60).
+
+#### Event: `error`
+
+```javascript
+function onerror(err) {
+  /* whatTheFussIsGoingOn(err); */
+}
+```
+
+Currently, this event is emitted only when some operation fails in retry loop. It is emitted only if `error` event listener is added to `Rorschach` instance - to save user from `Unhandled 'error' event`.
+
 #### Rorschach(connectionString, [options])
 
 Create instance.
@@ -111,7 +168,6 @@ __Arguments__
     * zookeeper `Object` ZooKeeper client options
 
 ---
-
 
 #### void close([callback])
 
@@ -201,8 +257,7 @@ Create request builder.
 
 #### `CreateBuilder` creatingParentsIfNeeded()
 
-If path create operation will receive `NO_NODE` error then builder will make
-an attempt to create parent nodes.
+If path create operation will receive `NO_NODE` error then builder will make an attempt to create parent nodes.
 
 __Returns__
 
