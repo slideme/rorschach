@@ -113,6 +113,19 @@ Rorschach.prototype.delete = function deleteBuilder() {
 
 
 /**
+ * Instantiate exists operation builder.
+ *
+ * @public
+ * @returns {ExistsBuilder} Builder instance
+ */
+Rorschach.prototype.exists = function exists() {
+  return new builders.ExistsBuilder(this);
+};
+
+
+
+
+/**
  * Instantiate get children builder.
  *
  * @public
@@ -180,6 +193,7 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
       self.emit('error', err);
     }
   }
+
   exec();
 };
 
