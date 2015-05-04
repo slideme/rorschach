@@ -2,7 +2,7 @@
 /*globals create, testPath, createPaths, deletePaths*/
 'use strict';
 
-var utils = require('../lib/utils');
+var utils = require('../../lib/utils');
 var zookeeper = require('node-zookeeper-client');
 var Event = zookeeper.Event;
 

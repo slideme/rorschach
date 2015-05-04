@@ -1,7 +1,7 @@
 //jshint -W030
 'use strict';
 
-var CreateBuilder = require('../lib/builders/create');
+var CreateBuilder = require('../../lib/builders/create');
 var zk = require('node-zookeeper-client');
 var ACL = zk.ACL;
 var CreateMode = zk.CreateMode;
