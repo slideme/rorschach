@@ -113,6 +113,19 @@ Rorschach.prototype.delete = function deleteBuilder() {
 
 
 /**
+ * Instantiate get children builder.
+ *
+ * @public
+ * @returns {GetChildrenBuilder} Builder instance
+ */
+Rorschach.prototype.getChildren = function getChildren() {
+  return new builders.GetChildrenBuilder(this);
+};
+
+
+
+
+/**
  * Instantiate get data builder.
  *
  * @public
