@@ -28,6 +28,7 @@ var zookeeper = require('node-zookeeper-client');
 
 var ACL = zookeeper.ACL;
 var CreateMode = zookeeper.CreateMode;
+var Event = zookeeper.Event;
 
 var Lock = Rorschach.Lock;
 var ReadWriteLock = Rorschach.ReadWriteLock;
@@ -38,7 +39,19 @@ client.on('connected', doTheWork);
 function doTheWork() {
   client.create().withMode(CreateMode.EPHEMERAL).withACL(ACL.READ_ACL_UNSAFE).forPath('/a', /*afterCreate(err, path)*/);
   client.create().withProtection().creatingParentsIfNeeded().forPath('/my/cool/znode/foo/bar', /*afterCreate(err, path)*/);
-  client.delete().deleteChildrenIfNeeded().guaranteed().forPath('/my/cool/znode', /*afterDelete(err)*/)
+  client.delete().deleteChildrenIfNeeded().guaranteed().forPath('/my/cool/znode', /*afterDelete(err)*/);
+
+  client.getData().usingWatcher(function watcher(event) {
+    if (event.getType() === Event.NODE_DELETED) {
+      // handle deleted
+    }
+    else if (event.getType() === Event.NODE_DATA_CHANGED) {
+      // handle data change
+    }
+    else {
+      console.warn('Wow, really?');
+    }
+  }).forPath('/some/path', /*afterGetData(err, data, stat)*/);
 
   var lock = new Lock(client, '/my/znodes/locks/myResource');
   lock.acquire(500, function afterAcquire(err) {
@@ -105,6 +118,16 @@ Instantiate delete operation builder.
 __Returns__
 
 * `DeleteBuilder` Builder instance
+
+---
+
+#### `GetDataBuilder` getData()
+
+Instantiate get data builder.
+
+__Returns__
+
+* `GetDataBuilder` Builder instance
 
 ---
 
@@ -261,6 +284,35 @@ __Arguments__
 __Returns__
 
 * `DeleteBuilder`
+
+---
+
+### GetDataBuilder
+
+Get data request builder.
+
+#### void forPath(path, callback)
+
+Execute getData().
+
+__Arguments__
+
+* path `String` Node path
+* callback `function` Callback function: <code>(err, data, stat)</code>
+
+---
+
+#### `GetDataBuilder` usingWatcher(watcher)
+
+Add watcher to operation request.
+
+__Arguments__
+
+* watcher `function` Watch function: <code>(event)</code>
+
+__Returns__
+
+* `GetDataBuilder`
 
 ---
 

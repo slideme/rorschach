@@ -84,12 +84,12 @@ Rorschach.prototype.close = function close(callback) {
 
 
 /**
- * Instantiate `CreateBuilder`.
+ * Instantiate create operation builder.
  *
  * @public
  * @returns {CreateBuilder} Builder instance
  */
-Rorschach.prototype.create = function createBuilder() {
+Rorschach.prototype.create = function create() {
   return new builders.CreateBuilder(this);
 };
 
@@ -97,13 +97,26 @@ Rorschach.prototype.create = function createBuilder() {
 
 
 /**
- * Instantiate `DeleteBuilder`.
+ * Instantiate delete operation builder.
  *
  * @public
  * @returns {DeleteBuilder} Builder instance
  */
 Rorschach.prototype.delete = function deleteBuilder() {
   return new builders.DeleteBuilder(this);
+};
+
+
+
+
+/**
+ * Instantiate get data builder.
+ *
+ * @public
+ * @returns {GetDataBuilder} Builder instance
+ */
+Rorschach.prototype.getData = function getData() {
+  return new builders.GetDataBuilder(this);
 };
 
 
