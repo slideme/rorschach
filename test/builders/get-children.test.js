@@ -6,7 +6,7 @@ var utils = require('../../lib/utils');
 var Event = Rorschach.Event;
 
 
-describe('GetChildrenBuilder', function getDataTestSuite() {
+describe('GetChildrenBuilder', function getChildrenTestSuite() {
   var client;
   var zk;
   var suitePath = '/test/getChildren';

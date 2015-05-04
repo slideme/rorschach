@@ -7,7 +7,7 @@ var Event = Rorschach.Event;
 var Exception = Rorschach.Exception;
 
 
-describe('ExistsBuilder', function getDataTestSuite() {
+describe('ExistsBuilder', function existsTestSuite() {
   var client;
   var zk;
   var suitePath = '/test/exists';
