@@ -2,10 +2,9 @@
 'use strict';
 
 var CreateBuilder = require('../../lib/builders/create');
-var zk = require('node-zookeeper-client');
-var ACL = zk.ACL;
-var CreateMode = zk.CreateMode;
-var Exception = zk.Exception;
+var ACL = Rorschach.ACL;
+var CreateMode = Rorschach.CreateMode;
+var Exception = Rorschach.Exception;
 
 
 describe('CreateBuilder', function createTestSuite() {

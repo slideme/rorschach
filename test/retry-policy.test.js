@@ -1,8 +1,7 @@
 /*jshint -W030*/
 'use strict';
 
-var zookeeper = require('node-zookeeper-client');
-var Exception = zookeeper.Exception;
+var Exception = Rorschach.Exception;
 var RetryPolicy = Rorschach.RetryPolicy;
 
 

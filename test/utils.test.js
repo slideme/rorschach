@@ -3,7 +3,7 @@
 
 var zookeeper = require('node-zookeeper-client');
 var utils = require('../lib/utils');
-var Exception = zookeeper.Exception;
+var Exception = Rorschach.Exception;
 
 
 describe('Utils', function utilsTestSuite() {
@@ -99,7 +99,7 @@ describe('Utils', function utilsTestSuite() {
 
       function afterDelete(err) {
         expect(err).to.be.ok;
-        expect(err.getCode()).to.eql(zookeeper.Exception.NO_NODE);
+        expect(err.getCode()).to.eql(Exception.NO_NODE);
         done();
       }
     });

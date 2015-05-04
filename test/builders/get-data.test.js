@@ -3,9 +3,8 @@
 'use strict';
 
 var utils = require('../../lib/utils');
-var zookeeper = require('node-zookeeper-client');
-var Event = zookeeper.Event;
-var Exception = zookeeper.Exception;
+var Event = Rorschach.Event;
+var Exception = Rorschach.Exception;
 
 
 describe('GetDataBuilder', function getDataTestSuite() {

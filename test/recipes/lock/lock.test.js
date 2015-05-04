@@ -2,10 +2,9 @@
 'use strict';
 
 var util = require('util');
-var zookeeper = require('node-zookeeper-client');
 var Lock = Rorschach.Lock;
 var LockDriver = Rorschach.LockDriver;
-var Exception = zookeeper.Exception;
+var Exception = Rorschach.Exception;
 
 
 function StubLockDriver() {
