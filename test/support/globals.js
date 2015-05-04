@@ -6,8 +6,13 @@ Rorschach = require('../../');
 ZK_STRING = process.env.ZK_STRING || '127.0.0.1:2181';
 
 
-create = function create(zk, path, callback) {
-  zk.mkdirp(path, afterCreate);
+create = function create(zk, path, data, callback) {
+  if (arguments.length === 3) {
+    callback = data;
+    data = null;
+  }
+
+  zk.mkdirp(path, data, afterCreate);
 
   function afterCreate(err, nodePath) {
     assert.ifError(err);
@@ -47,4 +52,9 @@ setData = function setData(zk, path, data, callback) {
 
     callback(stat);
   }
+};
+
+
+testPath = function testPath(root, num) {
+  return root + '/' + num;
 };
