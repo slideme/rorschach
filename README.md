@@ -229,6 +229,16 @@ __Returns__
 
 ---
 
+#### `SetDataBuilder` setData()
+
+Instantiate set data builder.
+
+__Returns__
+
+* `SetDataBuilder` Builder instance
+
+---
+
 ### RetryPolicy (Rorschach.RetryPolicy)
 
 Retry policy controls behavior of Rorschach in case of operational errors.
@@ -471,6 +481,36 @@ __Returns__
 
 ---
 
+### SetDataBuilder
+
+Set data request builder.
+
+#### void forPath(path, data, callback)
+
+Execute setData().
+
+__Arguments__
+
+* path `String` Node path
+* data `Buffer` Data to set
+* callback `function` Callback function: <code>(err, stat)</code>
+
+---
+
+#### `SetDataBuilder` withVersion(version)
+
+Set node version.
+
+__Arguments__
+
+* version `Number`
+
+__Returns__
+
+* `SetDataBuilder`
+
+---
+
 ### Lock (Rorschach.Lock)
 
 Distributed re-entrant lock.
@@ -654,12 +694,12 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Roadmap
 
+* Implement `Rorschach#getACL()` and `Rorschach#setACL()`;
 * Finalize implementation of distributed locks:
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
     * clone of [`InterProcessMultiLock`](http://curator.apache.org/curator-recipes/multi-shared-lock.html);
 * Implement [Leader Election](zookeeper.apache.org/doc/r3.4.6/recipes.html#sc_leaderElection) recipe.
-* Extend core class `Rorschach`.
 
 ## License
 

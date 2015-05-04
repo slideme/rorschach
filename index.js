@@ -197,6 +197,19 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
   exec();
 };
 
+
+
+
+/**
+ * Instantiate set data builder.
+ *
+ * @public
+ * @returns {SetDataBuilder} Builder instance
+ */
+Rorschach.prototype.setData = function setData() {
+  return new builders.SetDataBuilder(this);
+};
+
 // Reference `node-zookeeper-client` classes & constants
 ZOOKEEPER_CLASSES.forEach(function addRef(prop) {
   Rorschach[prop] = zookeeper[prop];
