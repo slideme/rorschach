@@ -12,6 +12,9 @@ var utils = require('./lib/utils');
 var zookeeper = require('node-zookeeper-client');
 var State = zookeeper.State;
 
+var ZOOKEEPER_CLASSES = ['ACL', 'CreateMode', 'Event', 'Exception', 'Id',
+  'Permission', 'State'];
+
 
 /*!
  * Expose Rorschach
@@ -161,6 +164,11 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
 
   exec();
 };
+
+// Reference `node-zookeeper-client` classes & constants
+ZOOKEEPER_CLASSES.forEach(function addRef(prop) {
+  Rorschach[prop] = zookeeper[prop];
+});
 
 
 Rorschach.Errors = Errors;

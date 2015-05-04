@@ -26,9 +26,9 @@ While _Curator is a ZooKeeper Keeper, Rorschach is a ZooKeeper Watchman_.
 var Rorschach = require('rorschach');
 var zookeeper = require('node-zookeeper-client');
 
-var ACL = zookeeper.ACL;
-var CreateMode = zookeeper.CreateMode;
-var Event = zookeeper.Event;
+var ACL = Rorschach.ACL;
+var CreateMode = Rorschach.CreateMode;
+var Event = Rorschach.Event;
 
 var Lock = Rorschach.Lock;
 var ReadWriteLock = Rorschach.ReadWriteLock;
@@ -76,6 +76,28 @@ function doTheWork() {
 ## API
 
 ### Rorschach
+
+Main class and, better to add, namespace.
+
+For convenience, following [node-zookeeper-client](https://github.com/alexguan/node-zookeeper-client) classes & constants were referenced by `Rorschach`:
+
+* `ACL`
+* `CreateMode`
+* `Event`
+* `Exception`
+* `Id`
+* `Permission`
+* `State`
+
+So you can use them like following:
+
+```javascript
+function watcher(event) {
+  if (event.getType() === Rorschach.Event.NODE_DELETED) {
+     console.log('At last...');
+  }
+}
+```
 
 #### Rorschach(connectionString, [options])
 
