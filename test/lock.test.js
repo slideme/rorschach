@@ -87,7 +87,6 @@ describe('Lock', function lockTestSuite() {
   it('should acquire lock when maxLeases is set to 2', function testMaxLeases(done) {
     var lock1 = new Lock(client, '/test/lock/2');
     var lock2 = new Lock(client, '/test/lock/2').setMaxLeases(2);
-    var count = 2;
     lock1.acquire(firstAcquired);
 
     function firstAcquired(err) {
@@ -100,16 +99,13 @@ describe('Lock', function lockTestSuite() {
     function secondAcquired(err) {
       assert.ifError(err);
       assert(lock2.isOwner());
-      lock1.release(afterRelease);
+      lock1.release();
       lock2.release(afterRelease);
     }
 
     function afterRelease(err) {
       assert.ifError(err);
-
-      if (!--count) {
-        done();
-      }
+      done();
     }
   });
 
