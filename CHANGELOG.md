@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+* Added `Rorschach#getData()` and implemented `GetDataBuilder`;
+* Added references to [node-zookeeper-client](https://github.com/alexguan/node-zookeeper-client) `ACL`, `CreateMode`, `Event`, `Exception`, `Id`, `Permission`, `State` as `Rorschach` static fields;
+* Added `error` event to provide better transparency of underlying ZooKeeper client activity;
+* Added `Rorschach#getChildren()` and implemented `GetChildrenBuilder`;
+* Added `Rorschach#exists()` and implemented `ExistsBuilder` ([#6](https://github.com/slideme/rorschach/issues/6));
+* Added `Rorschach#setData()` and implemented `SetDataBuilder` ([#7](https://github.com/slideme/rorschach/issues/7));
+* Fixed `Lock` bug when `#acquire()` callback gets called twice ([#5](https://github.com/slideme/rorschach/issues/5)).
+
 ## 0.2.0
 
 * Implemented `RetryPolicy` to control Rorschach behavior in case of operational errors;
