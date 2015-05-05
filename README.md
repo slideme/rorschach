@@ -209,6 +209,16 @@ __Returns__
 
 ---
 
+#### `GetACLBuilder` getACL()
+
+Instantiate get ACL builder.
+
+__Returns__
+
+* `GetACLBuilder` Builder instance
+
+---
+
 #### `GetChildrenBuilder` getChildren()
 
 Instantiate get children builder.
@@ -420,6 +430,21 @@ __Arguments__
 __Returns__
 
 * `ExistsBuilder`
+
+---
+
+### GetACLBuilder
+
+Get ACL request builder.
+
+#### void forPath(path, callback)
+
+Execute getACL().
+
+__Arguments__
+
+* path `String` Node path
+* callback `function` Callback function: <code>(err, acls, stat)</code>
 
 ---
 
