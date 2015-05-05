@@ -126,6 +126,19 @@ Rorschach.prototype.exists = function exists() {
 
 
 /**
+ * Instantiate get ACL builder.
+ *
+ * @public
+ * @returns {GetACLBuilder} Builder instance
+ */
+Rorschach.prototype.getACL = function getACL() {
+  return new builders.GetACLBuilder(this);
+};
+
+
+
+
+/**
  * Instantiate get children builder.
  *
  * @public
