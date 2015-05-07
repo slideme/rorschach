@@ -432,39 +432,32 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should not proceed if already exited #1', function testExitAfterCreate(done) {
+  it('should make only one acquire attempt #1', function testZeroTimeout(done) {
     var ourPath = testPath(suitePath, 15);
     var lock = new Lock(client, ourPath);
-    lock.acquire(1, afterAcquire);
+    lock.acquire(0, afterAcquire);
 
     function afterAcquire(err) {
-      expect(err).to.exist;
-      expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
+      assert.ifError(err);
       done();
     }
   });
 
-  it('should not proceed if already exited #2', function testExitAfterGetChildren(done) {
-    var ourPath = testPath(suitePath, 15);
-    var lock = new Lock(client, ourPath);
-    var stub = sandbox.stub(client.zk, 'getChildren', getChildrenStub);
+  it('should make only one acquire attempt #2', function testZeroTimeout(done) {
+    var ourPath = testPath(suitePath, 16);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
+    lock1.acquire(0, afterFirstAcquire);
 
-    lock.acquire(50, afterAcquire);
-
-    function getChildrenStub(path, callback) {
-      stub.restore();
-
-      setTimeout(delayed, 60);
-
-      function delayed() {
-        client.zk.getChildren(path, callback);
-      }
+    function afterFirstAcquire(err) {
+      assert.ifError(err);
+      lock2.acquire(0, afterSecondAcquire);
     }
 
-    function afterAcquire(err) {
+    function afterSecondAcquire(err) {
       expect(err).to.exist;
       expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
-      done();
+      lock1.release(done);
     }
   });
 });
