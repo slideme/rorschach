@@ -1,7 +1,7 @@
 /*jshint -W030*/
-/*globals testPath*/
 'use strict';
 
+var testPath = require('../../support/utils').testPath;
 var util = require('util');
 var Lock = Rorschach.Lock;
 var LockDriver = Rorschach.LockDriver;
@@ -397,7 +397,7 @@ describe('Lock', function lockTestSuite() {
 
     function afterAcquire(err) {
       expect(err.message).to.equal(removeError.message);
-      expect(err.getCode()).to.equal(removeError.getCode())
+      expect(err.getCode()).to.equal(removeError.getCode());
       done();
     }
   });
@@ -457,7 +457,7 @@ describe('Lock', function lockTestSuite() {
       setTimeout(delayed, 60);
 
       function delayed() {
-        client.zk.getChildren(path, callback)
+        client.zk.getChildren(path, callback);
       }
     }
 

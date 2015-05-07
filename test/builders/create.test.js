@@ -1,10 +1,13 @@
-//jshint -W030
+/*jshint -W030*/
 'use strict';
 
 var CreateBuilder = require('../../lib/builders/create');
+var testUtils = require('../support/utils');
 var ACL = Rorschach.ACL;
 var CreateMode = Rorschach.CreateMode;
 var Exception = Rorschach.Exception;
+var create = testUtils.create;
+var getChildren = testUtils.getChildren;
 
 
 describe('CreateBuilder', function createTestSuite() {

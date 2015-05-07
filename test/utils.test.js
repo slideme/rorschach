@@ -1,9 +1,13 @@
 /*jshint -W030*/
 'use strict';
 
+var testUtils = require('./support/utils');
 var zookeeper = require('node-zookeeper-client');
 var utils = require('../lib/utils');
 var Exception = Rorschach.Exception;
+var create = testUtils.create;
+var exists = testUtils.exists;
+var getChildren = testUtils.getChildren;
 
 
 describe('Utils', function utilsTestSuite() {
