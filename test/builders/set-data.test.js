@@ -1,10 +1,13 @@
 /*jshint -W030*/
-/*globals create, testPath, createPaths, deletePaths*/
 'use strict';
 
+var testUtils = require('../support/utils');
 var utils = require('../../lib/utils');
 var Event = Rorschach.Event;
 var Exception = Rorschach.Exception;
+var create = testUtils.create;
+var setData = testUtils.setData;
+var testPath = testUtils.testPath;
 
 
 describe('SetDataBuilder', function setDataTestSuite() {

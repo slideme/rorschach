@@ -1,9 +1,12 @@
 /*jshint -W030*/
-/*globals create, testPath, createPaths, deletePaths*/
 'use strict';
 
+var testUtils = require('../support/utils');
 var utils = require('../../lib/utils');
 var Event = Rorschach.Event;
+var createPaths = testUtils.createPaths;
+var deletePaths = testUtils.deletePaths;
+var testPath = testUtils.testPath;
 
 
 describe('GetChildrenBuilder', function getChildrenTestSuite() {
