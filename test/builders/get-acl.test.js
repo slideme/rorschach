@@ -1,9 +1,11 @@
 /*jshint -W030*/
-/*globals create, testPath*/
 'use strict';
 
+var testUtils = require('../support/utils');
 var utils = require('../../lib/utils');
 var Exception = Rorschach.Exception;
+var create = testUtils.create;
+var testPath = testUtils.testPath;
 
 
 describe('GetACLBuilder', function getACLTestSuite() {

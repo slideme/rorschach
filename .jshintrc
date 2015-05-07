@@ -15,8 +15,6 @@
   "maxdepth": 2,
   "maxcomplexity": 5,
   "globals": {
-    "Rorschach": true,
-    "ZK_STRING": true,
     "after": true,
     "afterEach": true,
     "assert": true,
@@ -26,9 +24,8 @@
     "expect": true,
     "it": true,
     "sinon": true,
-    "create": true,
-    "exists": true,
-    "getChildren": true,
-    "setData": true
+
+    "Rorschach": true,
+    "ZK_STRING": true
   }
 }

@@ -1,7 +1,11 @@
-//jshint -W030
+/*jshint -W030*/
 'use strict';
 
+var testUtils = require('../support/utils');
 var Exception = Rorschach.Exception;
+var create = testUtils.create;
+var exists = testUtils.exists;
+var setData = testUtils.setData;
 
 
 describe('DeleteBuilder', function deleteTestSuite() {
