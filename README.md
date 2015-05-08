@@ -6,11 +6,9 @@
   [![Build][travis-image]][travis-url]
   [![Test Coverage][coveralls-image]][coveralls-url]
 
-Rorschach is a Node.js module for high-level interaction with ZooKeeper.
+Rorschach is a Node.js module for high-level interaction with ZooKeeper. Currently it provides all the basic ZooKeeper operations. Refer to the [`Rorschach`](#rorschach-1) API doc below. And in a mean time more recipes will be added.
 
 Rorschach is meant to provide functionality similar to [Apache Curator](http://curator.apache.org/). It was started as implementation of [distributed locking](http://zookeeper.apache.org/doc/r3.4.6/recipes.html#sc_recipes_Locks) recipe and most of algorithms are taken from Curator sources.
-
-Hope, in some time more APIs will be added.
 
 While _Curator is a ZooKeeper Keeper, Rorschach is a ZooKeeper Watchman_.
 
@@ -761,7 +759,6 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Roadmap
 
-* Implement `Rorschach#getACL()` and `Rorschach#setACL()`;
 * Finalize implementation of distributed locks:
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
