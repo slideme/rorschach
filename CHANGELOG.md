@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+* Added `Rorschach#getACL()` and implemented `GetACLBuilder` ([#11](https://github.com/slideme/rorschach/issues/11));
+* Added `Rorschach#setACL()` and implemented `SetACLBuilder` ([#12](https://github.com/slideme/rorschach/issues/12));
+* Modify Lock to be able to return immediately if first acquire attempt fails ([#14](https://github.com/slideme/rorschach/issues/14));
+* Add missing `require('assert')` in operation builders ([#15](https://github.com/slideme/rorschach/issues/15)).
+
 ## 0.3.0
 
 * Added `Rorschach#getData()` and implemented `GetDataBuilder`;
