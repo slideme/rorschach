@@ -214,6 +214,19 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
 
 
 /**
+ * Instantiate set ACL builder.
+ *
+ * @public
+ * @returns {SetACLBuilder} Builder instance
+ */
+Rorschach.prototype.setACL = function setACL() {
+  return new builders.SetACLBuilder(this);
+};
+
+
+
+
+/**
  * Instantiate set data builder.
  *
  * @public

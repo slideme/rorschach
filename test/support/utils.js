@@ -78,6 +78,23 @@ testUtils.getChildren = function getChildren(zk, path, callback) {
 };
 
 
+testUtils.setACL = function setACL(zk, path, acls, version, callback) {
+  if (arguments.length === 4) {
+    callback = version;
+    zk.setACL(path, acls, handleResult);
+  }
+  else {
+    zk.setACL(path, acls, version, handleResult);
+  }
+
+  function handleResult(err, stat) {
+    assert.ifError(err);
+
+    callback(stat);
+  }
+};
+
+
 testUtils.setData = function setData(zk, path, data, callback) {
   zk.setData(path, data, handleResult);
 
