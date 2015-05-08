@@ -1,7 +1,7 @@
 {
   "name": "rorschach",
   "description": "Curator-like framework for ZooKeeper",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Alexander Makarenko",
     "email": "estliberitas@gmail.com"
