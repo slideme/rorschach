@@ -239,6 +239,16 @@ __Returns__
 
 ---
 
+#### `SetACLBuilder` setACL()
+
+Instantiate set ACL builder.
+
+__Returns__
+
+* `SetACLBuilder` Builder instance
+
+---
+
 #### `SetDataBuilder` setData()
 
 Instantiate set data builder.
@@ -503,6 +513,38 @@ __Arguments__
 __Returns__
 
 * `GetDataBuilder`
+
+---
+
+### SetACLBuilder
+
+Set ACL request builder.
+
+#### void forPath(path, acls, callback)
+
+Execute setACL().
+
+__Arguments__
+
+* path `String` Node path
+* acls `Array.<ACL>` ACLs
+* callback `function` Callback function: <code>(err, stat)</code>
+
+---
+
+#### `SetACLBuilder` withVersion(version)
+
+Set node ACL version (number of changes of ACL).
+
+It's not the same as node version (number of data changes).
+
+__Arguments__
+
+* version `Number`
+
+__Returns__
+
+* `SetACLBuilder`
 
 ---
 
