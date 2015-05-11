@@ -9,10 +9,13 @@
   "license": "MIT",
   "repository": "slideme/rorschach",
   "keywords": [
-    "zookeeper",
-    "recipe",
+    "apache zookeeper",
     "concurrency",
-    "lock"
+    "lock",
+    "readers-writer lock",
+    "recipe",
+    "shared lock",
+    "zookeeper"
   ],
   "main": "index.js",
   "dependencies": {
