@@ -98,31 +98,66 @@ describe('Utils', function utilsTestSuite() {
       }
     });
 
-    it('should return error for non-existing node', function testErrorNonExisting(done) {
-      utils.deleteChildren(zk, '/test/utils/non-existing', afterDelete);
+    it('should ignore non-existing node #1', function testIgnoreNonExistingRemove(done) {
+      var ourPath = '/test/utils/non-existing';
+      var stub = sinon.stub(zk, 'getChildren');
+      stub.withArgs(ourPath).callsArgWith(1, null, []);
+
+      utils.deleteChildren(zk, ourPath, true, afterDelete);
 
       function afterDelete(err) {
-        expect(err).to.be.ok;
-        expect(err.getCode()).to.eql(Exception.NO_NODE);
+        assert.ifError(err);
+        stub.restore();
         done();
       }
     });
 
-    it('should delegate error correctly', function testErrorDelegate(done) {
-      var ourPath = '/test/utils/5';
-      var children = ['foo'];
-      var errMsg = 'Stub error';
-
-      var stub = sinon.stub(zk, 'getChildren');
-      stub.withArgs(ourPath).callsArgWith(1, null, children);
-      stub.withArgs(ourPath + '/foo').callsArgWith(1, new Error(errMsg));
+    it('should ignore non-existing node #2', function testErrorNonExistingGetChildren(done) {
+      var ourPath = '/test/utils/non-existing';
 
       utils.deleteChildren(zk, ourPath, afterDelete);
 
       function afterDelete(err) {
-        expect(err).to.be.ok;
-        expect(err.message).to.eql('Stub error');
+        assert.ifError(err);
+        done();
+      }
+    });
+
+    it('should delegate error correctly #1', function testErrorDelegateGetChildren(done) {
+      var ourPath = '/test/utils/5';
+      var children = ['foo'];
+      var errMsg = 'Stub error';
+      var err = new Exception(Exception.BAD_VERSION, errMsg, TypeError);
+
+      var stub = sinon.stub(zk, 'getChildren');
+      stub.withArgs(ourPath).callsArgWith(1, null, children);
+      stub.withArgs(ourPath + '/foo').callsArgWith(1, err);
+
+      utils.deleteChildren(zk, ourPath, afterDelete);
+
+      function afterDelete(deleteErr) {
+        expect(deleteErr).to.equal(err);
         stub.restore();
+        done();
+      }
+    });
+
+    it('should delegate error correctly #2', function testErrorDelegateRemove(done) {
+      var ourPath = '/test/utils/6';
+      var errMsg = 'Stub error';
+      var err = new Exception(Exception.BAD_VERSION, errMsg, TypeError);
+
+      var stubGetChildren = sinon.stub(zk, 'getChildren');
+      stubGetChildren.withArgs(ourPath).callsArgWith(1, null, []);
+      var stubRemove = sinon.stub(zk, 'remove');
+      stubRemove.withArgs(ourPath, -1).callsArgWith(2, err);
+
+      utils.deleteChildren(zk, ourPath, true, afterDelete);
+
+      function afterDelete(deleteErr) {
+        expect(deleteErr).to.equal(err);
+        stubGetChildren.restore();
+        stubRemove.restore();
         done();
       }
     });
