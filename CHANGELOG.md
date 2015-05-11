@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+* Fixed ZooKeeper client error handling behavior;
+* Fixed `Rorschach.Utils.deleteChildren()` behavior in case of `NO_NODE` exceptions;
+* Exposed `Rorschach.Utils`.
+
 ## 0.4.0
 
 * Added `Rorschach#getACL()` and implemented `GetACLBuilder` ([#11](https://github.com/slideme/rorschach/issues/11));
