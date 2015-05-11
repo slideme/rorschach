@@ -257,6 +257,51 @@ __Returns__
 
 ---
 
+### Utils (Rorschach.Utils)
+
+Utility functions.
+
+#### static void deleteChildren(zk, path, [deleteSelf], callback)
+
+Delete children for given path and maybe given znode.
+
+__Arguments__
+
+* zk `Client` ZooKeeper client
+* path `String` Node path
+* deleteSelf `Boolean` Delete node itself Default: `false`
+* callback `function` Callback function: <code>(err)</code>
+
+---
+
+#### static `String` join(args...)
+
+Join paths.
+
+__Arguments__
+
+* args `String` Paths
+
+__Returns__
+
+* `String`
+
+---
+
+#### static void mkdirs(zk, path, makeLastNode, acl, callback)
+
+Create path and parent nodes if needed.
+
+__Arguments__
+
+* zk `Client` ZooKeeper client
+* path `String`
+* makeLastNode `Boolean`
+* acl `Array.<ACL>`
+* callback `function` Callback function: <code>(err)</code>
+
+---
+
 ### RetryPolicy (Rorschach.RetryPolicy)
 
 Retry policy controls behavior of Rorschach in case of operational errors.
