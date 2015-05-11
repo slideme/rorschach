@@ -47,23 +47,7 @@ function Rorschach(connectionString, options) {
     this.retryPolicy = new RetryPolicy(retryPolicy);
   }
 
-  var self = this;
-  var zk = zookeeper.createClient(connectionString, options.zookeeper || {});
-  zk.on('state', handleStateChange);
-  zk.connect();
-
-  this.zk = zk;
-  this.state = State.CONNECTING;
-
-  function handleStateChange(state) {
-    self.state = state;
-
-    self.emit('connectionStateChanged', state);
-
-    if (state === State.SYNC_CONNECTED) {
-      self.emit('connected');
-    }
-  }
+  initZooKeeper(this, connectionString, options.zookeeper);
 }
 util.inherits(Rorschach, EventEmitter);
 
@@ -77,10 +61,21 @@ util.inherits(Rorschach, EventEmitter);
  * @param {Function} [callback] Callback function
  */
 Rorschach.prototype.close = function close(callback) {
-  if (typeof callback === 'function') {
+  this.closed = true;
+
+  callback = callback || utils.noop;
+
+  if (this.state === State.SYNC_CONNECTED) {
     this.zk.on('disconnected', callback);
+    this.zk.close();
   }
-  this.zk.close();
+  else {
+    var self = this;
+    process.nextTick(function delayedClose() {
+      self.zk.close();
+      callback();
+    });
+  }
 };
 
 
@@ -165,8 +160,74 @@ Rorschach.prototype.getData = function getData() {
 
 
 /**
+ * Initialize connection with ZooKeeper.
+ *
+ * @param {Rorschach} rorschach Rorschach instance
+ * @param {String} connectionString Connection string
+ * @param {Object} options ZooKeeper options.
+ */
+function initZooKeeper(rorschach, connectionString, options) {
+  var error;
+  var zk = zookeeper.createClient(connectionString, options);
+
+  rorschach.zk = zk;
+
+  zk.connect();
+  zk.on('connected', onconnected);
+  zk.on('expired', setError);
+  zk.on('authenticationFailed', setError);
+  zk.on('disconnected', ondisconnected);
+  zk.on('state', handleStateChange);
+
+  function onconnected() {
+    error = false;
+  }
+
+  function setError() {
+    error = true;
+  }
+
+  function ondisconnected() {
+    if (rorschach.closed) {
+      return;
+    }
+
+    if (error) {
+      zk.removeListener('connected', onconnected);
+      zk.removeListener('disconnected', ondisconnected);
+      zk.removeListener('expired', setError);
+      zk.removeListener('authenticationFailed', setError);
+      zk.removeListener('state', handleStateChange);
+      zk.close();
+
+      initZooKeeper(rorschach, connectionString, options);
+    }
+  }
+
+  function handleStateChange(state) {
+    rorschach.state = state;
+
+    rorschach.emit('connectionStateChanged', state);
+
+    if (state === State.SYNC_CONNECTED) {
+      if (!rorschach.ready) {
+        rorschach.ready = true;
+        rorschach.emit('connected');
+      }
+      else {
+        rorschach.emit('reconnected');
+      }
+    }
+  }
+}
+
+
+
+
+/**
  * Execute some procedure in retryable loop.
  *
+ * @private
  * @param {Function} job Function expecting <code>callback(err)</code> as only argument
  * @param {Function} callback Callback function
  */
@@ -197,7 +258,7 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
       callback(err);
     }
     else {
-      exec();
+      process.nextTick(exec);
     }
   }
 
@@ -249,3 +310,4 @@ Rorschach.ReadWriteLock = ReadWriteLock;
 Rorschach.SortingLockDriver = ReadWriteLock.SortingLockDriver;
 Rorschach.ReadLockDriver = ReadWriteLock.ReadLockDriver;
 Rorschach.RetryPolicy = RetryPolicy;
+Rorschach.Utils = utils;
