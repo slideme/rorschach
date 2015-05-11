@@ -22,13 +22,18 @@ describe('Rorschach', function rorschachTestSuite() {
     }
   });
 
-  it('should close client without issues', function testClose(done) {
+  it('should close client without issues #1', function testClose(done) {
     var client = new Rorschach(ZK_STRING);
     client.on('connected', onConnected);
 
     function onConnected() {
       client.close(done);
     }
+  });
+
+  it('should close client without issues #2', function testCloseWithoutConnect() {
+    var client = new Rorschach(ZK_STRING);
+    client.close();
   });
 
   it('should initialize with custom retry policy', function testCustomRetryPolicy() {
@@ -64,6 +69,38 @@ describe('Rorschach', function rorschachTestSuite() {
     }
     catch (ex) {
       // do nothing
+    }
+  });
+
+  it('should not reconnect if client is marked as closed', function testNoReconnect(done) {
+    var client = new Rorschach(ZK_STRING);
+    client.close();
+    client.emit('disconnected');
+    done();
+  });
+
+  it('should not reconnect if no error was found', function testNoErrorNoReconnect(done) {
+    var client = new Rorschach(ZK_STRING);
+    client.on('connected', onConnected);
+
+    function onConnected() {
+      client.zk.close();
+      done();
+    }
+  });
+
+  it('should reconnect in case of error', function testReconnect(done) {
+    var client = new Rorschach(ZK_STRING);
+    client.on('connected', onConnected);
+
+    function onConnected() {
+      client.zk.emit('expired');
+      client.zk.emit('disconnected');
+      client.on('reconnected', afterReconnect);
+    }
+
+    function afterReconnect() {
+      client.close(done);
     }
   });
 
