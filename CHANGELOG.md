@@ -4,7 +4,8 @@
 
 * Implemented `LeaderElection` class;
 * Implemented `ConnectionState` and changed behavior of `connectionStateChanged` event of `Rorschach`;
-* Added contents to API.
+* Added contents to API;
+* Updated dependencies.
 
 ## 0.4.1
 
