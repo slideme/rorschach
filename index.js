@@ -3,6 +3,7 @@
 var builders = require('./lib/builders');
 var Errors = require('./lib/errors');
 var EventEmitter = require('events').EventEmitter;
+var LeaderElection = require('./lib/LeaderElection');
 var Lock = require('./lib/Lock');
 var LockDriver = require('./lib/LockDriver');
 var ReadWriteLock = require('./lib/ReadWriteLock');
@@ -324,6 +325,7 @@ ZOOKEEPER_CLASSES.forEach(function addRef(prop) {
 
 Rorschach.ConnectionState = ConnectionState;
 Rorschach.Errors = Errors;
+Rorschach.LeaderElection = LeaderElection;
 Rorschach.Lock = Lock;
 Rorschach.LockDriver = LockDriver;
 Rorschach.ReadWriteLock = ReadWriteLock;

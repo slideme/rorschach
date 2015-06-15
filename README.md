@@ -97,7 +97,7 @@ function onerror(err) {
 
 ## API
 
-* [Rorschach](#rorschach)
+* [Rorschach](#rorschach-1)
     * [Rorschach(connectionString, [options])](#rorschachconnectionstring-options)
     * [#Event: 'connected'](#event-connected)
     * [#Event: 'connectionStateChanged'](#event-connectionstatechanged)
@@ -139,26 +139,37 @@ function onerror(err) {
     * [#guaranteed()](#deletebuilder-guaranteed)
     * [#withVersion(version)](#deletebuilder-withversionversion)
 * [ExistsBuilder](#existsbuilder)
-    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#forPath(path, callback)](#void-forpathpath-callback-1)
     * [#usingWatcher(watcher)](#existsbuilder-usingwatcherwatcher)
 * [GetACLBuilder](#getaclbuilder)
-    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#forPath(path, callback)](#void-forpathpath-callback-2)
 * [GetChildrenBuilder](#getchildrenbuilder)
-    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#forPath(path, callback)](#void-forpathpath-callback-3)
     * [#usingWatcher(watcher)](#getchildrenbuilder-usingwatcherwatcher)
 * [GetDataBuilder](#getdatabuilder)
-    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#forPath(path, callback)](#void-forpathpath-callback-4)
     * [#usingWatcher(watcher)](#getdatabuilder-usingwatcherwatcher)
 * [SetACLBuilder](#setaclbuilder)
     * [#forPath(path, acls, callback)](#void-forpathpath-acls-callback)
     * [#withVersion(version)](#setaclbuilder-withversionversion)
 * [SetDataBuilder](#setdatabuilder)
-    * [#forPath(path, data, callback)](#void-forpathpath-data-callback)
+    * [#forPath(path, data, callback)](#void-forpathpath-data-callback-1)
     * [#withVersion(version)](#setdatabuilder-withversionversion)
+* [LeaderElection](#leaderelection-rorschachleaderelection)
+    * [LeaderElection(client, path, id)](#leaderelectionclient-path-id)
+    * [#Event: 'error'](#event-error-1)
+    * [#Event: 'isLeader'](#event-isleader)
+    * [#Event: 'notLeader'](#event-notleader)
+    * [#client](#rorschach-client)
+    * [#path](#string-path)
+    * [#id](#string-id)
+    * [#hasLeadership()](#boolean-hasleadership)
+    * [#start(callback)](#void-startcallback)
+    * [#stop(callback)](#void-stopcallback)
 * [Lock](#lock-rorschachlock)
     * [Lock(client, basePath, [lockName], [lockDriver])](#lockclient-basepath-lockname-lockdriver)
     * [.LOCK_NAME](#static-const-string-lock_name)
-    * [#client](#rorschach-client)
+    * [#client](#rorschach-client-1)
     * [#basePath](#string-basepath)
     * [#lockName](#string-lockname)
     * [#driver](#lockdriver-driver)
@@ -224,6 +235,8 @@ function onConnected() { }
 
 Emitted when connection to ZooKeeper server is established.
 
+---
+
 #### Event: `connectionStateChanged`
 
 ```javascript
@@ -237,6 +250,8 @@ function onStateChanged(state) {
 
 Emitted whenever ZooKeeper client connection state changes. The only argument is state which is one of `ConnectionState`s.
 
+---
+
 #### Event: `error`
 
 ```javascript
@@ -246,6 +261,8 @@ function onerror(err) {
 ```
 
 Currently, this event is emitted only when some operation fails in retry loop. It is emitted only if `error` event listener is added to `Rorschach` instance - to save user from `Unhandled 'error' event`.
+
+---
 
 #### void close([callback])
 
@@ -741,6 +758,106 @@ __Returns__
 
 ---
 
+### LeaderElection (Rorschach.LeaderElection)
+
+Leader election recipe implementation.
+
+#### LeaderElection(client, path, id)
+
+Leader election participant.
+
+__Arguments__
+
+* client `Rorschach` Rorschach instance
+* path `String` Election path
+* id `String` Participant id
+
+---
+
+#### Event: `error`
+
+```javascript
+function onerror(err) {
+  // do smth. with error
+}
+```
+
+Emitted when some background operation fails. You must always set listener for this event.
+
+---
+
+#### Event: `isLeader`
+
+```javascript
+function leaderListener() {
+  // start tasks for which leader is responsible
+}
+```
+
+Emitted when leadership is obtained.
+
+---
+
+#### Event: `notLeader`
+
+```javascript
+function notLeaderListener() {
+  // stop tasks for which leader is responsible
+}
+```
+
+Emitted when leadership is lost.
+
+---
+
+#### `Rorschach` client
+
+Ref. to client.
+
+---
+
+#### `String` path
+
+ZooKeeper path where participants' nodes exist.
+
+---
+
+#### `String` id
+
+Id of participant. It's kept in node.
+
+---
+
+#### `Boolean` hasLeadership()
+
+Check if our node is leader.
+
+__Returns__
+
+* `Boolean`
+
+---
+
+#### void start(callback)
+
+Start taking part in election process.
+
+__Arguments__
+
+* callback `function` Callback function: <code>(err)</code>
+
+---
+
+#### void stop(callback)
+
+Leave the game for youngz.
+
+__Arguments__
+
+* callback `function` Callback function: <code>(err)</code>
+
+---
+
 ### Lock (Rorschach.Lock)
 
 Distributed re-entrant lock.
@@ -928,7 +1045,6 @@ See [CHANGELOG.md](CHANGELOG.md).
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
     * clone of [`InterProcessMultiLock`](http://curator.apache.org/curator-recipes/multi-shared-lock.html);
-* Implement [Leader Election](zookeeper.apache.org/doc/r3.4.6/recipes.html#sc_leaderElection) recipe.
 
 ## License
 

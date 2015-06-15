@@ -11,6 +11,8 @@
   "keywords": [
     "apache zookeeper",
     "concurrency",
+    "leader election",
+    "leader",
     "lock",
     "readers-writer lock",
     "recipe",
