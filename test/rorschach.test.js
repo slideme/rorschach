@@ -96,12 +96,66 @@ describe('Rorschach', function rorschachTestSuite() {
     function onConnected() {
       client.zk.emit('expired');
       client.zk.emit('disconnected');
-      client.on('reconnected', afterReconnect);
+      client.on('connectionStateChanged', handleStateChange);
     }
 
-    function afterReconnect() {
-      client.close(done);
+    function handleStateChange(state) {
+      if (state === Rorschach.ConnectionState.RECONNECTED) {
+        client.close(done);
+      }
     }
+  });
+
+  describe('States', function statesTestSuite() {
+    function emitAndCheck(zkState, rorschachState, done) {
+      var client = new Rorschach(ZK_STRING);
+      client.on('connected', onConnected);
+
+      function onConnected() {
+        process.nextTick(changeState);
+      }
+
+      function changeState() {
+        client.on('connectionStateChanged', handleStateChange);
+        client.zk.emit('state', zkState);
+      }
+
+      function handleStateChange(state) {
+        if (state === rorschachState) {
+          client.close(done);
+        }
+      }
+    }
+
+    it('should set to READ_ONLY state when connected in read-only mode', function testReadOnly(done) {
+      emitAndCheck(Rorschach.State.CONNECTED_READ_ONLY,
+        Rorschach.ConnectionState.READ_ONLY, done);
+    });
+
+    it('should set to READ_ONLY state when connected in read-only mode', function testExpired(done) {
+      emitAndCheck(Rorschach.State.EXPIRED, Rorschach.ConnectionState.LOST,
+        done);
+    });
+
+    it('should not react on AUTH_FAILED and SASL_AUTHENTICATED', function testNotHandled(done) {
+      var client = new Rorschach(ZK_STRING);
+      client.on('connected', onConnected);
+
+      function onConnected() {
+        process.nextTick(changeState);
+      }
+
+      function changeState() {
+        client.once('connectionStateChanged', handleStateChange);
+        client.zk.emit('state', Rorschach.State.AUTH_FAILED);
+        client.zk.emit('state', Rorschach.State.SASL_AUTHENTICATED);
+        client.close(done);
+      }
+
+      function handleStateChange() {
+        throw new Error('This should not happend to say');
+      }
+    });
   });
 
   describe('retryLoop()', function retryLoopTestSuite() {

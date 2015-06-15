@@ -11,6 +11,7 @@ var util = require('util');
 var utils = require('./lib/utils');
 var zookeeper = require('node-zookeeper-client');
 var State = zookeeper.State;
+var ConnectionState = require('./lib/ConnectionState');
 
 var ZOOKEEPER_CLASSES = ['ACL', 'CreateMode', 'Event', 'Exception', 'Id',
   'Permission', 'State'];
@@ -47,6 +48,9 @@ function Rorschach(connectionString, options) {
     this.retryPolicy = new RetryPolicy(retryPolicy);
   }
 
+  // Initial state
+  this.state = ConnectionState.LOST;
+
   initZooKeeper(this, connectionString, options.zookeeper);
 }
 util.inherits(Rorschach, EventEmitter);
@@ -65,8 +69,8 @@ Rorschach.prototype.close = function close(callback) {
 
   callback = callback || utils.noop;
 
-  if (this.state === State.SYNC_CONNECTED) {
-    this.zk.on('disconnected', callback);
+  if (this.state.isConnected()) {
+    this.zk.once('disconnected', callback);
     this.zk.close();
   }
   else {
@@ -205,19 +209,34 @@ function initZooKeeper(rorschach, connectionString, options) {
   }
 
   function handleStateChange(state) {
-    rorschach.state = state;
-
-    rorschach.emit('connectionStateChanged', state);
+    var newState;
 
     if (state === State.SYNC_CONNECTED) {
       if (!rorschach.ready) {
         rorschach.ready = true;
         rorschach.emit('connected');
+        newState = ConnectionState.CONNECTED;
       }
       else {
-        rorschach.emit('reconnected');
+        newState = ConnectionState.RECONNECTED;
       }
     }
+    else if (state === State.CONNECTED_READ_ONLY) {
+      newState = ConnectionState.READ_ONLY;
+    }
+    else if (state === State.EXPIRED) {
+      newState = ConnectionState.LOST;
+    }
+    else if (state === State.DISCONNECTED) {
+      newState = ConnectionState.SUSPENDED;
+    }
+    else {
+      // AUTH_FAILED and SASL_AUTHENTICATED are not handled, yep.
+      return;
+    }
+
+    rorschach.state = newState;
+    rorschach.emit('connectionStateChanged', newState);
   }
 }
 
@@ -303,6 +322,7 @@ ZOOKEEPER_CLASSES.forEach(function addRef(prop) {
 });
 
 
+Rorschach.ConnectionState = ConnectionState;
 Rorschach.Errors = Errors;
 Rorschach.Lock = Lock;
 Rorschach.LockDriver = LockDriver;
