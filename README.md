@@ -97,6 +97,88 @@ function onerror(err) {
 
 ## API
 
+* [Rorschach](#rorschach)
+    * [Rorschach(connectionString, [options])](#rorschachconnectionstring-options)
+    * [#Event: 'connected'](#event-connected)
+    * [#Event: 'connectionStateChanged'](#event-connectionstatechanged)
+    * [#Event: 'error'](#event-error)
+    * [#close([callback])](#void-closecallback)
+    * [#create()](#createbuilder-create)
+    * [#delete()](#deletebuilder-delete)
+    * [#exists()](#existsbuilder-exists)
+    * [#getACL()](#getaclbuilder-getacl)
+    * [#getChildren()](#getchildrenbuilder-getchildren)
+    * [#getData()](#getdatabuilder-getdata)
+    * [#setACL()](#setaclbuilder-setacl)
+    * [#setData()](#setdatabuilder-setdata)
+* [ConnectionState](#connectionstate-rorschachconnectionstate)
+    * [.CONNECTED](#static-connectionstate-connected)
+    * [.READ_ONLY](#static-connectionstate-read_only)
+    * [.RECONNECTED](#static-connectionstate-reconnected)
+    * [.SUSPENDED](#static-connectionstate-suspended)
+    * [.LOST](#static-connectionstate-lost)
+    * [#isConnected()](#void-isconnected)
+* [Utils](#utils-rorschachutils)
+    * [.deleteChildren(zk, path, [deleteSelf], callback)](#static-void-deletechildrenzk-path-deleteself-callback)
+    * [.join(args...)](#static-string-joinargs)
+    * [.mkdirs(zk, path, makeLastNode, acl, callback)](#static-void-mkdirszk-path-makelastnode-acl-callback)
+* [RetryPolicy](#retrypolicy-rorschachretrypolicy)
+    * [RetryPolicy([options])](#retrypolicyoptions)
+    * [.DEFAULT_MAX_ATTEMPTS](#static-const-number-default_max_attempts)
+    * [.DEFAULT_RETRYABLE_ERRORS](#static-const-arraynumber-default_retryable_errors)
+    * [#isRetryable(err)](#boolean-isretryableerr)
+* [CreateBuilder](#createbuilder)
+    * [#creatingParentsIfNeeded()](#createbuilder-creatingparentsifneeded)
+    * [#forPath(path, [data], callback)](#void-forpathpath-data-callback)
+    * [#withACL(acls)](#createbuilder-withaclacls)
+    * [#withMode(mode)](#createbuilder-withmodemode)
+    * [#withProtection()](#createbuilder-withprotection)
+* [DeleteBuilder](#deletebuilder)
+    * [#deleteChildrenIfNeeded()](#deletebuilder-deletechildrenifneeded)
+    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#guaranteed()](#deletebuilder-guaranteed)
+    * [#withVersion(version)](#deletebuilder-withversionversion)
+* [ExistsBuilder](#existsbuilder)
+    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#usingWatcher(watcher)](#existsbuilder-usingwatcherwatcher)
+* [GetACLBuilder](#getaclbuilder)
+    * [#forPath(path, callback)](#void-forpathpath-callback)
+* [GetChildrenBuilder](#getchildrenbuilder)
+    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#usingWatcher(watcher)](#getchildrenbuilder-usingwatcherwatcher)
+* [GetDataBuilder](#getdatabuilder)
+    * [#forPath(path, callback)](#void-forpathpath-callback)
+    * [#usingWatcher(watcher)](#getdatabuilder-usingwatcherwatcher)
+* [SetACLBuilder](#setaclbuilder)
+    * [#forPath(path, acls, callback)](#void-forpathpath-acls-callback)
+    * [#withVersion(version)](#setaclbuilder-withversionversion)
+* [SetDataBuilder](#setdatabuilder)
+    * [#forPath(path, data, callback)](#void-forpathpath-data-callback)
+    * [#withVersion(version)](#setdatabuilder-withversionversion)
+* [Lock](#lock-rorschachlock)
+    * [Lock(client, basePath, [lockName], [lockDriver])](#lockclient-basepath-lockname-lockdriver)
+    * [.LOCK_NAME](#static-const-string-lock_name)
+    * [#client](#rorschach-client)
+    * [#basePath](#string-basepath)
+    * [#lockName](#string-lockname)
+    * [#driver](#lockdriver-driver)
+    * [#lockPath](#string-lockpath)
+    * [#maxLeases](#number-maxleases)
+    * [#acquires](#number-acquires)
+    * [#acquire([timeout], callback)](#void-acquiretimeout-callback)
+    * [#destroy([callback])](#void-destroycallback)
+    * [#isOwner()](#boolean-isowner)
+    * [#release([callback])](#void-releasecallback)
+    * [#setMaxLeases(maxLeases)](#lock-setmaxleasesmaxleases)
+* [ReadWriteLock](#readwritelock-rorschachreadwritelock)
+    * [ReadWriteLock(client, basePath)](#readwritelockclient-basepath)
+    * [.READ_LOCK_NAME](#static-const-string-read_lock_name)
+    * [.WRITE_LOCK_NAME](#static-const-string-write_lock_name)
+    * [#writeMutex](#lock-writemutex)
+    * [#readMutex](#lock-readmutex)
+    * [#readLock()](#lock-readlock)
+    * [#writeLock()](#lock-writelock)
+
 ### Rorschach
 
 Main class and, better to add, namespace.
@@ -121,39 +203,6 @@ function watcher(event) {
 }
 ```
 
-#### Event: `connected`
-
-```javascript
-function onConnected() { }
-```
-
-Emitted when connection to ZooKeeper server is established.
-
-#### Event: `connectionStateChanged`
-
-```javascript
-function onStateChanged(state) {
-  if (state === Rorschach.State.SYNC_CONNECTED) {
-    console.info('Let\'s rock!');
-  }
-  /* else if ... */
-}
-```
-
-Emitted whenever ZooKeeper client connection state changes. The only argument is state which is one of the [`Rorschach.State.*`](https://github.com/alexguan/node-zookeeper-client#state) constants.
-
-P.S.: at the moment of writing, there are typos in mentioned documentation and actual state names are available [here](https://github.com/alexguan/node-zookeeper-client/blob/master/lib/State.js#L60).
-
-#### Event: `error`
-
-```javascript
-function onerror(err) {
-  /* whatTheFussIsGoingOn(err); */
-}
-```
-
-Currently, this event is emitted only when some operation fails in retry loop. It is emitted only if `error` event listener is added to `Rorschach` instance - to save user from `Unhandled 'error' event`.
-
 #### Rorschach(connectionString, [options])
 
 Create instance.
@@ -166,6 +215,37 @@ __Arguments__
     * zookeeper `Object` ZooKeeper client options
 
 ---
+
+#### Event: `connected`
+
+```javascript
+function onConnected() { }
+```
+
+Emitted when connection to ZooKeeper server is established.
+
+#### Event: `connectionStateChanged`
+
+```javascript
+function onStateChanged(state) {
+  if (state === Rorschach.ConnectionState.CONNECTED || state === Rorschach.ConnectionState.RECONNECTED) {
+    console.info('Let\'s rock!');
+  }
+  /* else if ... */
+}
+```
+
+Emitted whenever ZooKeeper client connection state changes. The only argument is state which is one of `ConnectionState`s.
+
+#### Event: `error`
+
+```javascript
+function onerror(err) {
+  /* whatTheFussIsGoingOn(err); */
+}
+```
+
+Currently, this event is emitted only when some operation fails in retry loop. It is emitted only if `error` event listener is added to `Rorschach` instance - to save user from `Unhandled 'error' event`.
 
 #### void close([callback])
 
@@ -254,6 +334,46 @@ Instantiate set data builder.
 __Returns__
 
 * `SetDataBuilder` Builder instance
+
+---
+
+### ConnectionState (Rorschach.ConnectionState)
+
+Represents high-level connection state.
+
+#### static `ConnectionState` CONNECTED
+
+Connected state. Emitted only once for each Rorschach instance.
+
+---
+
+#### static `ConnectionState` READ_ONLY
+
+Connected in read-only mode.
+
+---
+
+#### static `ConnectionState` RECONNECTED
+
+Connection was re-established.
+
+---
+
+#### static `ConnectionState` SUSPENDED
+
+Connection was lost, but we're waiting to re-connect.
+
+---
+
+#### static `ConnectionState` LOST
+
+Connection was lost. Bye-bye, white pony.
+
+---
+
+#### void isConnected()
+
+Return "connected" state.
 
 ---
 
@@ -625,6 +745,25 @@ __Returns__
 
 Distributed re-entrant lock.
 
+#### Lock(client, basePath, [lockName], [lockDriver])
+
+Distributed lock implementation
+
+__Arguments__
+
+* client `Rorschach` Rorschach instance
+* basePath `String` Base lock path
+* lockName `String` Ephemeral node name
+* lockDriver `LockDriver` Lock utilities Default: `new LockDriver()`
+
+---
+
+#### static const `String` LOCK_NAME
+
+Default lock node name.
+
+---
+
 #### `Rorschach` client
 
 Keep ref to client as all the low-level operations are done through it.
@@ -664,25 +803,6 @@ Number of max leases.
 #### `Number` acquires
 
 Number of acquires.
-
----
-
-#### static const `String` LOCK_NAME
-
-Default lock node name.
-
----
-
-#### Lock(client, basePath, [lockName], [lockDriver])
-
-Distributed lock implementation
-
-__Arguments__
-
-* client `Rorschach` Rorschach instance
-* basePath `String` Base lock path
-* lockName `String` Ephemeral node name
-* lockDriver `LockDriver` Lock utilities Default: `new LockDriver()`
 
 ---
 
@@ -754,18 +874,6 @@ __Arguments__
 
 ---
 
-#### `Lock` writeMutex
-
-Write mutex.
-
----
-
-#### `Lock` readMutex
-
-Read mutex.
-
----
-
 #### static const `String` READ_LOCK_NAME
 
 Read lock node name.
@@ -775,6 +883,18 @@ Read lock node name.
 #### static const `string` WRITE_LOCK_NAME
 
 Write lock node name.
+
+---
+
+#### `Lock` writeMutex
+
+Write mutex.
+
+---
+
+#### `Lock` readMutex
+
+Read mutex.
 
 ---
 

@@ -13,7 +13,7 @@
   "validthis": false,
   "maxstatements": 32,
   "maxdepth": 2,
-  "maxcomplexity": 5,
+  "maxcomplexity": 6,
   "globals": {
     "after": true,
     "afterEach": true,

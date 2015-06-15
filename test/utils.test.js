@@ -296,6 +296,12 @@ describe('Utils', function utilsTestSuite() {
   });
 
   describe('pathAndNode()', function pathAndNodeTestSuite() {
+    it('should handle empty path case', function testNullCase() {
+      var ret = utils.pathAndNode(null);
+      expect(ret.path).to.eql('/');
+      expect(ret.node).to.eql('');
+    });
+
     it('should split path w/o separator into / and node name', function testRootPath() {
       var ret = utils.pathAndNode('/foo');
       expect(ret.path).to.eql('/');
