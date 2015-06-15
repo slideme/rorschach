@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+* Implemented `LeaderElection` class;
+* Implemented `ConnectionState` and changed behavior of `connectionStateChanged` event of `Rorschach`;
+* Added contents to API.
+
 ## 0.4.1
 
 * Fixed ZooKeeper client error handling behavior;
