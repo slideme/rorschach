@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+* Added string name to `ConnectionState`.
+
 ## 0.5.0
 
 * Implemented `LeaderElection` class;
