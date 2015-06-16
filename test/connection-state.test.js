@@ -24,6 +24,18 @@ describe('ConnectionState', function connectionStateTestSuite() {
     });
   });
 
+  describe('#toString()', function toStringTestSuite() {
+    it('should return string representation', function testUsualCase() {
+      expect(ConnectionState.CONNECTED.toString()).to.equal('CONNECTED[0]');
+      expect(String(ConnectionState.CONNECTED)).to.equal('CONNECTED[0]');
+    });
+
+    it('should return correct value for arbitrary state', function testArbitrary() {
+      expect(ConnectionState(-1, 'WHATEVER', true).toString()).to.equal('WHATEVER[-1]');
+      expect(String(ConnectionState(-1, 'WHATEVER', true))).to.equal('WHATEVER[-1]');
+    });
+  });
+
   describe('#valueOf', function valueOfTestSuite() {
     it('should return state numeric Id', function testUsualCase() {
       expect(ConnectionState.CONNECTED.valueOf()).to.be.a('number');
