@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1
+
+* Fixed bug in `Lock#acquire()` making it possible to set timeout timer twice;
+* Update `Lock` code to use high-level operation methods: `Rorschach#getData()` and `Rorschach#getChildren()`.
+
 ## 0.6.0
 
 * Added string name to `ConnectionState`.
