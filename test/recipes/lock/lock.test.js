@@ -237,6 +237,40 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
+  it('should set timer only once', function testErrorTimeoutOnce(done) {
+    var ourPath = testPath(suitePath, 17);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
+    var stub;
+    var noNodeError = new Exception(Exception.NO_NODE, 'Stub error', Error);
+
+    lock1.acquire(afterFirstAcquire);
+
+    function afterFirstAcquire(err) {
+      assert.ifError(err);
+      stub = sandbox.stub(client.zk, 'getData', getDataStub);
+      lock2.acquire(500, afterSecondAcquire);
+    }
+
+    function getDataStub(path, watch, callback) {
+      stub.restore();
+      client.zk.getData(path, watch, afterGetData);
+
+      function afterGetData(err) {
+        assert.ifError(err);
+        callback(noNodeError);
+      }
+    }
+
+    function afterSecondAcquire(err) {
+      stub.restore();
+      expect(err).to.exist;
+      expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
+      assert(!lock2.isOwner());
+      lock1.release(done);
+    }
+  });
+
   it('should pass create error to callback', function testErrorCreate(done) {
     var basePath = '/test/lock/9';
     var lock = new Lock(client, basePath);
@@ -337,7 +371,7 @@ describe('Lock', function lockTestSuite() {
     var lock1 = new Lock(client, basePath);
     var lock2 = new Lock(client, basePath);
     var stub = sandbox.stub(client.zk, 'getData', getDataStub);
-    var err = new Exception(Exception.CONNECTION_LOSS, 'Stub error', Error);
+    var err = new Exception(Exception.NODE_EXISTS, 'Stub error', Error);
 
     function getDataStub(path, watch, callback) {
       stub.restore();
