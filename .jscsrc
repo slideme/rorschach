@@ -12,17 +12,14 @@
   "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
   "disallowAnonymousFunctions": true,
   "disallowMultipleLineBreaks": null,
-  "disallowMultipleVarDecl": "exceptUndefined",
+  "disallowMultipleVarDecl": {
+    "allExcept": ["undefined"]
+  },
   "disallowSpacesInsideObjectBrackets": null,
   "disallowKeywordsOnNewLine": [],
   "maximumLineLength": {
     "value": 150,
     "allowComments": true,
     "allowRegex": true
-  },
-  "validateJSDoc": {
-    "checkParamNames": false,
-    "checkRedundantParams": false,
-    "requireParamTypes": true
   }
 }
