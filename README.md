@@ -190,10 +190,10 @@ function onerror(err) {
     * [#readLock()](#lock-readlock)
     * [#writeLock()](#lock-writelock)
 * [ExecutionError](#executionerror-rorschacherrorsexecutionerror)
-    * [#original](#original)
-    * [#operation](#operation)
-    * [#operationArgs](#operationargs)
-    * [#getCode()](#getcode)
+    * [#original](#error-original)
+    * [#operation](#string-operation)
+    * [#operationArgs](#array-operationargs)
+    * [#getCode()](#number-getcode)
 
 ### Rorschach
 
