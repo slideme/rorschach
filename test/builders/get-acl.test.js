@@ -62,7 +62,7 @@ describe('GetACLBuilder', function getACLTestSuite() {
     client.getACL().forPath(ourPath, afterGetACL);
 
     function afterGetACL(err) {
-      expect(err).to.be.ok;
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.equal(Exception.NO_NODE);
       done();
     }

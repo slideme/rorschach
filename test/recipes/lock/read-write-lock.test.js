@@ -18,6 +18,10 @@ describe('ReadWriteLock', function readWriteLockTestSuite() {
     client.once('connected', done);
   });
 
+  after(function deletePlayGround(done) {
+    client.delete().deleteChildrenIfNeeded().forPath('/test/rw-lock', done);
+  });
+
   after(function afterAll() {
     client.close();
   });

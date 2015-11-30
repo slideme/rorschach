@@ -280,7 +280,8 @@ describe('Lock', function lockTestSuite() {
 
     function afterAcquire(acquireError) {
       stub.restore();
-      expect(acquireError).to.equal(err);
+      expect(acquireError).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(acquireError.original).to.equal(err);
       done();
     }
 
@@ -296,7 +297,8 @@ describe('Lock', function lockTestSuite() {
 
     function afterAcquire(acquireError) {
       stub.restore();
-      expect(acquireError).to.equal(err);
+      expect(acquireError).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(acquireError.original).to.equal(err);
       done();
     }
 
@@ -396,7 +398,8 @@ describe('Lock', function lockTestSuite() {
     }
 
     function afterSecondAcquire(acquireErr) {
-      expect(acquireErr).to.equal(err);
+      expect(acquireErr).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(acquireErr.original).to.equal(err);
       lock1.release(done);
     }
   });
@@ -430,8 +433,8 @@ describe('Lock', function lockTestSuite() {
     }
 
     function afterAcquire(err) {
-      expect(err.message).to.equal(removeError.message);
-      expect(err.getCode()).to.equal(removeError.getCode());
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(err.original).to.equal(removeError);
       done();
     }
   });

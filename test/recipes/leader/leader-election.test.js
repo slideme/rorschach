@@ -299,7 +299,7 @@ describe('LeaderElection', function leaderElectionTestSuite() {
     }
 
     function afterStop(err) {
-      expect(err).to.equal(funnyError);
+      expect(err.original).to.equal(funnyError);
       stub.restore();
       done();
     }
@@ -392,7 +392,7 @@ describe('LeaderElection', function leaderElectionTestSuite() {
     startOneAfterAnother(foo, bar, afterBothStarted);
 
     function trackError(err) {
-      expect(err).to.equal(funnyError);
+      expect(err.original).to.equal(funnyError);
       bar.stop(done);
     }
 
@@ -429,7 +429,7 @@ describe('LeaderElection', function leaderElectionTestSuite() {
     startOneAfterAnother(foo, bar, afterBothStarted);
 
     function trackError(err) {
-      expect(err).to.equal(funnyError);
+      expect(err.original).to.equal(funnyError);
       bar.stop(done);
     }
 
@@ -484,7 +484,7 @@ describe('LeaderElection', function leaderElectionTestSuite() {
 
     function afterStart(err) {
       expect(err).to.be.ok;
-      expect(err.getCode()).to.equal(Exception.NO_NODE);
+      expect(err.original.getCode()).to.equal(Exception.NO_NODE);
       participant.stop(done);
     }
   });

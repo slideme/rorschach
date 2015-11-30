@@ -124,7 +124,9 @@ describe('ExistsBuilder', function existsTestSuite() {
     client.exists().forPath(ourPath, handleResult);
 
     function handleResult(existsErr) {
-      expect(existsErr).to.equal(err);
+      expect(existsErr).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(existsErr.getCode()).to.equal(err.getCode());
+      expect(existsErr.original).to.equal(err);
       stub.restore();
       done();
     }

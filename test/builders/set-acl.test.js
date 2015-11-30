@@ -99,7 +99,7 @@ describe('SetACLBuilder', function setACLTestSuite() {
     client.setACL().forPath(ourPath, newACL, afterSetACL);
 
     function afterSetACL(err, stat) {
-      expect(err).to.be.ok;
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.equal(Exception.NO_NODE);
       done();
     }
@@ -116,7 +116,7 @@ describe('SetACLBuilder', function setACLTestSuite() {
     }
 
     function afterSetACL(err) {
-      expect(err).to.be.ok;
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.equal(Exception.BAD_VERSION);
       zk.remove(ourPath, -1, done);
     }

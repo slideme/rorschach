@@ -57,7 +57,7 @@ describe('Rorschach', function rorschachTestSuite() {
 
     function onerror(err) {
       if (error) {
-        expect(error).to.equal(err);
+        expect(error.original).to.equal(err);
       }
       else {
         error = err;
@@ -159,7 +159,7 @@ describe('Rorschach', function rorschachTestSuite() {
   });
 
   describe('retryLoop()', function retryLoopTestSuite() {
-    it('should catch error and validate it', function testErrorCatch() {
+    it('should catch error and validate it', function testErrorCatch(done) {
       var err = new Error('Stub error');
       var client = new Rorschach(ZK_STRING);
       client.retryLoop(testJob, onDone);
@@ -170,7 +170,7 @@ describe('Rorschach', function rorschachTestSuite() {
 
       function onDone(jobError) {
         expect(jobError).to.equal(err);
-        close(client);
+        close(client, done);
       }
     });
   });

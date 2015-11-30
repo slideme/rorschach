@@ -5,6 +5,7 @@ var testUtils = require('../support/utils');
 var Exception = Rorschach.Exception;
 var create = testUtils.create;
 var exists = testUtils.exists;
+var utils = require('../../lib/utils');
 var setData = testUtils.setData;
 
 
@@ -27,7 +28,7 @@ describe('DeleteBuilder', function deleteTestSuite() {
   });
 
   after(function deletePlayGround(done) {
-    zk.remove('/test/delete', -1, done);
+    utils.deleteChildren(zk, '/test/delete', true, done);
   });
 
   after(function afterAll() {
@@ -133,14 +134,29 @@ describe('DeleteBuilder', function deleteTestSuite() {
     }
   });
 
-  it('should delegate error correctly', function testErrorDelegate(done) {
+  it('should return NO_NODE if node does not exist', function testErrorNoNode(done) {
     var ourPath = '/test/delete/5';
 
     client.delete().forPath(ourPath, afterDelete);
 
     function afterDelete(err) {
-      expect(err).to.exist;
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.eql(Exception.NO_NODE);
+      done();
+    }
+  });
+
+  it('should return BAD_VERSION if wrong version was specified', function testErrorVersion(done) {
+    var ourPath = '/test/delete/6';
+    create(zk, ourPath, afterCreate);
+
+    function afterCreate() {
+      client.delete().withVersion(2).forPath(ourPath, afterDelete);
+    }
+
+    function afterDelete(err) {
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(err.getCode()).to.eql(Exception.BAD_VERSION);
       done();
     }
   });

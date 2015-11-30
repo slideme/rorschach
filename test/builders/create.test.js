@@ -194,6 +194,7 @@ describe('CreateBuilder', function createTestSuite() {
     client.create().forPath(path, afterCreate);
 
     function afterCreate(err, path) {
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.eql(Exception.NODE_EXISTS);
       expect(path).to.not.exist;
       done();
@@ -205,6 +206,7 @@ describe('CreateBuilder', function createTestSuite() {
     client.create().forPath(path, afterCreate);
 
     function afterCreate(err, path) {
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
       expect(err.getCode()).to.eql(Exception.NO_NODE);
       expect(path).to.not.exist;
       done();
@@ -215,14 +217,15 @@ describe('CreateBuilder', function createTestSuite() {
     var path = '/test/create/8';
     var msg = 'Stub error';
     var code = Exception.CONNECTION_LOSS;
-    var err = new Exception(code, msg, Error);
+    var error = new Exception(code, msg, Error);
 
-    generateStub('getChildren', [err]);
+    generateStub('getChildren', [error]);
 
     client.create().withProtection().forPath(path, afterCreate);
 
     function afterCreate(err) {
-      expect(err).to.equal(err);
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(err.original).to.equal(error);
       done();
     }
   });
@@ -231,14 +234,15 @@ describe('CreateBuilder', function createTestSuite() {
     var path = '/test/create/9';
     var msg = 'Stub error';
     var code = Exception.CONNECTION_LOSS;
-    var err = new Exception(code, msg, Error);
+    var error = new Exception(code, msg, Error);
 
-    generateStub('getChildren', [err, err]);
+    generateStub('getChildren', [error, error]);
 
     client.create().withProtection().forPath(path, afterCreate);
 
     function afterCreate(err) {
-      expect(err).to.equal(err);
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(err.original).to.equal(error);
       done();
     }
   });
@@ -254,7 +258,8 @@ describe('CreateBuilder', function createTestSuite() {
     client.create().withProtection().forPath(path, afterCreate);
 
     function afterCreate(err) {
-      expect(err).to.equal(err2);
+      expect(err).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(err.original).to.equal(err2);
       done();
     }
   });
@@ -284,7 +289,8 @@ describe('CreateBuilder', function createTestSuite() {
     builder.withProtection().forPath(path, afterCreate);
 
     function afterCreate(createError) {
-      expect(createError).to.equal(err);
+      expect(createError).to.be.instanceOf(Rorschach.Errors.ExecutionError);
+      expect(createError.original).to.equal(err);
       getChildren(zkClient, '/test/create', handleGetChildrenResult);
     }
 
