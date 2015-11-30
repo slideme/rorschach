@@ -189,6 +189,11 @@ function onerror(err) {
     * [#readMutex](#lock-readmutex)
     * [#readLock()](#lock-readlock)
     * [#writeLock()](#lock-writelock)
+* [ExecutionError](#executionerror-rorschacherrorsexecutionerror)
+    * [#original](#original)
+    * [#operation](#operation)
+    * [#operationArgs](#operationargs)
+    * [#getCode()](#getcode)
 
 ### Rorschach
 
@@ -503,7 +508,7 @@ __Arguments__
 
 * path `String` Path to znode
 * data `Buffer` ZNode data to set Default: `null`
-* callback `function` Callback function: <code>(err, path)</code>
+* callback `function` Callback function: <code>(executionError, path)</code>
 
 ---
 
@@ -605,7 +610,7 @@ Execute exists().
 __Arguments__
 
 * path `String` Node path
-* callback `function` Callback function: <code>(err, exists, stat)</code>
+* callback `function` Callback function: <code>(executionError, exists, stat)</code>
 
 ---
 
@@ -634,7 +639,7 @@ Execute getACL().
 __Arguments__
 
 * path `String` Node path
-* callback `function` Callback function: <code>(err, acls, stat)</code>
+* callback `function` Callback function: <code>(executionError, acls, stat)</code>
 
 ---
 
@@ -649,7 +654,7 @@ Execute getChildren().
 __Arguments__
 
 * path `String` Node path
-* callback `function` Callback function: <code>(err, data, stat)</code>
+* callback `function` Callback function: <code>(executionError, data, stat)</code>
 
 ---
 
@@ -678,7 +683,7 @@ Execute getData().
 __Arguments__
 
 * path `String` Node path
-* callback `function` Callback function: <code>(err, data, stat)</code>
+* callback `function` Callback function: <code>(executionError, data, stat)</code>
 
 ---
 
@@ -708,7 +713,7 @@ __Arguments__
 
 * path `String` Node path
 * acls `Array.<ACL>` ACLs
-* callback `function` Callback function: <code>(err, stat)</code>
+* callback `function` Callback function: <code>(executionError, stat)</code>
 
 ---
 
@@ -740,7 +745,7 @@ __Arguments__
 
 * path `String` Node path
 * data `Buffer` Data to set
-* callback `function` Callback function: <code>(err, stat)</code>
+* callback `function` Callback function: <code>(executionError, stat)</code>
 
 ---
 
@@ -1035,12 +1040,37 @@ __Returns__
 
 ---
 
+### ExecutionError (Rorschach.Errors.ExecutionError)
+
+Error which serves a wrapper to actual ZooKeeper client error. It is returned
+by operation builders in case of failure.
+
+#### `Error` original
+
+Original error instance.
+
+#### `String` operation
+
+Operation type: `create`, `remove`, etc.
+
+#### `Array` operationArgs
+
+Arguments passed to original ZK client method.
+
+#### `Number` getCode()
+
+Defined only if original error is instance of `Exception`. Returns error code of
+original error.
+
+---
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).
 
 ## Roadmap
 
+* Implement service discovery
 * Finalize implementation of distributed locks:
     * clone of [`InterProcessSemaphoreV2`](http://curator.apache.org/curator-recipes/shared-semaphore.html);
     * clone of [`InterProcessSemaphoreMutex`](http://curator.apache.org/curator-recipes/shared-lock.html);
