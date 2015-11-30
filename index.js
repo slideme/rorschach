@@ -1,6 +1,6 @@
 'use strict';
 
-var builders = require('./lib/builders');
+var ConnectionState = require('./lib/ConnectionState');
 var Errors = require('./lib/errors');
 var EventEmitter = require('events').EventEmitter;
 var LeaderElection = require('./lib/LeaderElection');
@@ -12,7 +12,16 @@ var util = require('util');
 var utils = require('./lib/utils');
 var zookeeper = require('node-zookeeper-client');
 var State = zookeeper.State;
-var ConnectionState = require('./lib/ConnectionState');
+var ExecutionError = Errors.ExecutionError;
+
+var CreateBuilder = require('./lib/builders/create');
+var DeleteBuilder = require('./lib/builders/delete');
+var ExistsBuilder = require('./lib/builders/exists');
+var GetACLBuilder = require('./lib/builders/get-acl');
+var GetChildrenBuilder = require('./lib/builders/get-children');
+var GetDataBuilder = require('./lib/builders/get-data');
+var SetACLBuilder = require('./lib/builders/set-acl');
+var SetDataBuilder = require('./lib/builders/set-data');
 
 var ZOOKEEPER_CLASSES = ['ACL', 'CreateMode', 'Event', 'Exception', 'Id',
   'Permission', 'State'];
@@ -93,7 +102,7 @@ Rorschach.prototype.close = function close(callback) {
  * @returns {CreateBuilder} Builder instance
  */
 Rorschach.prototype.create = function create() {
-  return new builders.CreateBuilder(this);
+  return new CreateBuilder(this);
 };
 
 
@@ -106,7 +115,7 @@ Rorschach.prototype.create = function create() {
  * @returns {DeleteBuilder} Builder instance
  */
 Rorschach.prototype.delete = function deleteBuilder() {
-  return new builders.DeleteBuilder(this);
+  return new DeleteBuilder(this);
 };
 
 
@@ -119,7 +128,7 @@ Rorschach.prototype.delete = function deleteBuilder() {
  * @returns {ExistsBuilder} Builder instance
  */
 Rorschach.prototype.exists = function exists() {
-  return new builders.ExistsBuilder(this);
+  return new ExistsBuilder(this);
 };
 
 
@@ -132,7 +141,7 @@ Rorschach.prototype.exists = function exists() {
  * @returns {GetACLBuilder} Builder instance
  */
 Rorschach.prototype.getACL = function getACL() {
-  return new builders.GetACLBuilder(this);
+  return new GetACLBuilder(this);
 };
 
 
@@ -145,7 +154,7 @@ Rorschach.prototype.getACL = function getACL() {
  * @returns {GetChildrenBuilder} Builder instance
  */
 Rorschach.prototype.getChildren = function getChildren() {
-  return new builders.GetChildrenBuilder(this);
+  return new GetChildrenBuilder(this);
 };
 
 
@@ -158,7 +167,7 @@ Rorschach.prototype.getChildren = function getChildren() {
  * @returns {GetDataBuilder} Builder instance
  */
 Rorschach.prototype.getData = function getData() {
-  return new builders.GetDataBuilder(this);
+  return new GetDataBuilder(this);
 };
 
 
@@ -247,7 +256,6 @@ function initZooKeeper(rorschach, connectionString, options) {
 /**
  * Execute some procedure in retryable loop.
  *
- * @private
  * @param {Function} job Function expecting <code>callback(err)</code> as only argument
  * @param {Function} callback Callback function
  */
@@ -278,7 +286,7 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
       callback(err);
     }
     else {
-      process.nextTick(exec);
+      setImmediate(exec);
     }
   }
 
@@ -301,7 +309,7 @@ Rorschach.prototype.retryLoop = function retryLoop(job, callback) {
  * @returns {SetACLBuilder} Builder instance
  */
 Rorschach.prototype.setACL = function setACL() {
-  return new builders.SetACLBuilder(this);
+  return new SetACLBuilder(this);
 };
 
 
@@ -314,7 +322,7 @@ Rorschach.prototype.setACL = function setACL() {
  * @returns {SetDataBuilder} Builder instance
  */
 Rorschach.prototype.setData = function setData() {
-  return new builders.SetDataBuilder(this);
+  return new SetDataBuilder(this);
 };
 
 // Reference `node-zookeeper-client` classes & constants
