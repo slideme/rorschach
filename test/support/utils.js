@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+var series = require('async-each-series');
 var testUtils = module.exports = {};
 
 
@@ -21,7 +21,7 @@ testUtils.create = function create(zk, path, data, callback) {
 
 
 testUtils.createPaths = function createPaths(zk, paths, cb) {
-  async.eachSeries(paths, createPath, cb);
+  series(paths, createPath, cb);
 
   function createPath(path, cb) {
     zk.create(path, afterCreate);
@@ -39,7 +39,7 @@ testUtils.createPaths = function createPaths(zk, paths, cb) {
 
 
 testUtils.deletePaths = function deletePaths(zk, paths, cb) {
-  async.eachSeries(paths, deletePath, cb);
+  series(paths, deletePath, cb);
 
   function deletePath(path, cb) {
     zk.remove(path, -1, afterCreate);

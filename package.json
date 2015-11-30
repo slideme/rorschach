@@ -21,21 +21,21 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "async": "^1.2.1",
-    "custom-error-generator": "^7.0.0",
+    "async-each": "^1.0.0",
+    "async-each-series": "^1.1.0",
     "node-zookeeper-client": "^0.2.2",
     "uuid": "^2.0.1"
   },
   "devDependencies": {
-    "chai": "^3.0.0",
-    "istanbul": "^0.3.15",
-    "jscs": "^1.13.1",
+    "chai": "^3.4.1",
+    "istanbul": "^0.4.1",
+    "jscs": "^2.6.0",
     "jshint": "^2.8.0",
-    "mocha": "^2.2.5",
-    "sinon": "^1.15.3"
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 0.12"
   },
   "files": [
     ".jscsrc",
