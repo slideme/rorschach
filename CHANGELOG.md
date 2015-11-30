@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+* Introduce `ExecutionError` class which is to provide more information about underlying ZooKeeper client errors
+* Fix `Lock#acquire()` timeout check
+* Update dependencies
+
 ## 0.6.1
 
 * Fixed bug in `Lock#acquire()` making it possible to set timeout timer twice;
