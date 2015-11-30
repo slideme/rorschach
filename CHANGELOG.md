@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+* Small fixes
+
 ## 0.7.0
 
 * Introduce `ExecutionError` class which is to provide more information about underlying ZooKeeper client errors
