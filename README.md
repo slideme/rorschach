@@ -1,10 +1,11 @@
 # Rorschach
 ---
 
-  [![NPM Version][npm-image]][npm-url]
-  [![License][license-image]][npm-url]
-  [![Build][travis-image]][travis-url]
-  [![Test Coverage][coveralls-image]][coveralls-url]
+  [![NPM Version](https://img.shields.io/npm/v/rorschach.svg)](https://npmjs.org/package/rorschach)
+  [![License](https://img.shields.io/npm/l/rorschach.svg)](https://npmjs.org/package/rorschach)
+  [![Build](https://img.shields.io/travis/slideme/rorschach.svg)](https://travis-ci.org/slideme/rorschach)
+  [![Test Coverage](https://img.shields.io/coveralls/slideme/rorschach/master.svg)](https://coveralls.io/r/slideme/rorschach?branch=master)
+  [![bitHound Overall Score](https://www.bithound.io/github/slideme/rorschach/badges/score.svg)](https://www.bithound.io/github/slideme/rorschach)
 
 Rorschach is a Node.js module for high-level interaction with ZooKeeper. Currently it provides all the basic ZooKeeper operations. Refer to the [`Rorschach`](#rorschach-1) API doc below. And in a mean time more recipes will be added.
 
@@ -1066,7 +1067,7 @@ original error.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/slideme/rorschach/blob/master/CHANGELOG.md).
 
 ## Roadmap
 
@@ -1078,12 +1079,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-See [LICENSE.md](LICENSE.md).
-
-[npm-image]: https://img.shields.io/npm/v/rorschach.svg
-[npm-url]: https://npmjs.org/package/rorschach
-[license-image]: https://img.shields.io/npm/l/rorschach.svg
-[travis-image]: https://img.shields.io/travis/slideme/rorschach.svg
-[travis-url]: https://travis-ci.org/slideme/rorschach
-[coveralls-image]: https://img.shields.io/coveralls/slideme/rorschach/master.svg
-[coveralls-url]: https://coveralls.io/r/slideme/rorschach?branch=master
+See [LICENSE.md](https://github.com/slideme/rorschach/blob/master/LICENSE.md).
