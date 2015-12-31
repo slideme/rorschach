@@ -1,3 +1,14 @@
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/slideme/rorschach/compare/v0.7.1...v0.7.2) (2015-12-31)
+
+
+### Bug Fixes
+
+* **deps:** use `del` instead of `gull-rimraf` ([fd68dfc](https://github.com/slideme/rorschach/commit/fd68dfc))
+* **Lock:** do not allow calling of `acquire()` callback twice ([06b9914](https://github.com/slideme/rorschach/commit/06b9914)), closes [#28](https://github.com/slideme/rorschach/issues/28)
+
+
+
 ## 0.7.1
 
 * Small fixes
