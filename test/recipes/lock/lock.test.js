@@ -4,6 +4,7 @@ var testPath = require('../../support/utils').testPath;
 var util = require('util');
 var Lock = Rorschach.Lock;
 var LockDriver = Rorschach.LockDriver;
+var Event = Rorschach.Event;
 var Exception = Rorschach.Exception;
 
 
@@ -39,27 +40,27 @@ describe('Lock', function lockTestSuite() {
     client.close();
   });
 
-  it('should instantiate with 2 arguments', function testInit2Args() {
+  it('should init with 2 arguments', function init2() {
     var lock = new Lock(client, '/lock');
     assert.strictEqual(lock.driver.constructor, LockDriver);
     assert.equal(lock.lockName, Lock.LOCK_NAME);
   });
 
-  it('should instantiate with 3 arguments: last is lock name', function testInit3Args1() {
+  it('should init with 3 arguments #1', function init31() {
     var lockName = 'foo-';
     var lock = new Lock(client, '/lock', lockName);
     assert.strictEqual(lock.driver.constructor, LockDriver);
     assert.equal(lock.lockName, lockName);
   });
 
-  it('should instantiate with 3 arguments: last is lock driver', function testInit3Args2() {
+  it('should init with 3 arguments #2', function init32() {
     var lockDriver = new StubLockDriver();
     var lock = new Lock(client, '/lock', lockDriver);
     assert.strictEqual(lock.driver.constructor, StubLockDriver);
     assert.equal(lock.lockName, Lock.LOCK_NAME);
   });
 
-  it('should instantiate with 4 arguments', function testInit4Args() {
+  it('should init with 4 arguments', function init4() {
     var lockName = 'bar-';
     var lockDriver = new StubLockDriver();
     var lock = new Lock(client, '/lock', lockName, lockDriver);
@@ -67,8 +68,9 @@ describe('Lock', function lockTestSuite() {
     assert.equal(lock.lockName, lockName);
   });
 
-  it('should acquire & release lock', function testUsualCase(done) {
-    var lock = new Lock(client, '/test/lock/1');
+  it('should acquire & release lock', function acquireRelease(done) {
+    var ourPath = testPath(suitePath, 1);
+    var lock = new Lock(client, ourPath);
     lock.acquire(afterAcquire);
 
     function afterAcquire(err) {
@@ -84,9 +86,10 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should acquire lock when maxLeases is set to 2', function testMaxLeases(done) {
-    var lock1 = new Lock(client, '/test/lock/2');
-    var lock2 = new Lock(client, '/test/lock/2').setMaxLeases(2);
+  it('should acquire when maxLeases is 2', function maxLeases(done) {
+    var ourPath = testPath(suitePath, 2);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath).setMaxLeases(2);
     lock1.acquire(firstAcquired);
 
     function firstAcquired(err) {
@@ -109,9 +112,10 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should acquire only when lock is released by holder', function testAcquireAfterRelease(done) {
-    var lock1 = new Lock(client, '/test/lock/3');
-    var lock2 = new Lock(client, '/test/lock/3');
+  it('should acquire only when no other lock holds', function consistent(done) {
+    var ourPath = testPath(suitePath, 3);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
     var stub = sandbox.stub(client.zk, 'getData', getDataStub);
     lock1.acquire(afterFirstAcquired);
 
@@ -145,8 +149,9 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should re-enter already acquired lock', function testReenterAcquired(done) {
-    var lock = new Lock(client, '/test/lock/6');
+  it('should re-enter already acquired lock', function reenter(done) {
+    var ourPath = testPath(suitePath, 4);
+    var lock = new Lock(client, ourPath);
     assert(!lock.acquires);
 
     lock.acquire(afterFirstAcquire);
@@ -182,8 +187,9 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should error if release() is called too often', function testErrorReleaseTooOften(done) {
-    var lock = new Lock(client, '/test/lock/7');
+  it('should error if release() is called two often', function release(done) {
+    var ourPath = testPath(suitePath, 5);
+    var lock = new Lock(client, ourPath);
 
     lock.acquire(afterFirstAcquire);
 
@@ -198,14 +204,16 @@ describe('Lock', function lockTestSuite() {
     }
 
     function afterSecondRelease(err) {
+      var errMsg = 'Lock count has got negative for: ' + ourPath;
       expect(err).to.exist;
-      expect(err.message).to.eql('Lock count has got negative for: /test/lock/7');
+      expect(err.message).to.eql(errMsg);
       done();
     }
   });
 
-  it('should acquire lock with timeout', function testTimeout(done) {
-    var lock = new Lock(client, '/test/lock/7');
+  it('should acquire lock with timeout', function timeout(done) {
+    var ourPath = testPath(suitePath, 6);
+    var lock = new Lock(client, ourPath);
 
     lock.acquire(1000, afterAcquire);
 
@@ -216,9 +224,10 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should return error when acquire() timed out', function testErrorTimeout(done) {
-    var lock1 = new Lock(client, '/test/lock/8');
-    var lock2 = new Lock(client, '/test/lock/8');
+  it('should return error when acquire() timed out', function timeoutErr(done) {
+    var ourPath = testPath(suitePath, 7);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
 
     lock1.acquire(afterFirstAcquire);
     lock2.acquire(500, afterSecondAcquire);
@@ -236,8 +245,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should set timer only once', function testErrorTimeoutOnce(done) {
-    var ourPath = testPath(suitePath, 17);
+  it('should set timer only once', function errorTimeoutOnce(done) {
+    var ourPath = testPath(suitePath, 8);
     var lock1 = new Lock(client, ourPath);
     var lock2 = new Lock(client, ourPath);
     var stub;
@@ -270,8 +279,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should pass create error to callback', function testErrorCreate(done) {
-    var basePath = '/test/lock/9';
+  it('should pass create() error to callback', function acquireErr1(done) {
+    var basePath = testPath(suitePath, 9);
     var lock = new Lock(client, basePath);
     var stub = sandbox.stub(client.zk, 'create');
     var err = new Exception(Exception.CONNECTION_LOSS, 'Stub error', Error);
@@ -287,8 +296,8 @@ describe('Lock', function lockTestSuite() {
     lock.acquire(1000, afterAcquire);
   });
 
-  it('should pass getChildren error to callback', function testErrorGetChildren(done) {
-    var basePath = '/test/lock/10';
+  it('should pass getChildren() error to callback', function acquireErr2(done) {
+    var basePath = testPath(suitePath, 10);
     var lock = new Lock(client, basePath);
     var stub = sandbox.stub(client.zk, 'getChildren');
     var err = new Exception(Exception.CONNECTION_LOSS, 'Stub error', Error);
@@ -304,8 +313,8 @@ describe('Lock', function lockTestSuite() {
     lock.acquire(afterAcquire);
   });
 
-  it('should pass LockDriver#getsTheLock() error to callback', function testErrorGetsTheLock(done) {
-    var basePath = '/test/lock/11';
+  it('should pass getsTheLock() error to callback', function acquireErr3(done) {
+    var basePath = testPath(suitePath, 11);
     var lock = new Lock(client, basePath);
     var nodeName = Lock.LOCK_NAME + '0000000000';
     var stub = sandbox.stub(lock.driver, 'getsTheLock');
@@ -323,8 +332,8 @@ describe('Lock', function lockTestSuite() {
     lock.acquire(afterAcquire);
   });
 
-  it('should pass destroy() error to callback', function testErrorDestroy(done) {
-    var basePath = '/test/lock/12';
+  it('should pass destroy() error to callback', function destroyErr(done) {
+    var basePath = testPath(suitePath, 12);
     var lock = new Lock(client, basePath);
     var destroy = lock.destroy;
     var stub = sandbox.stub(lock, 'destroy', destroyStub);
@@ -367,8 +376,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should pass getData error to callback', function testErrorGetData(done) {
-    var basePath = '/test/lock/13';
+  it('should pass getData() error to callback', function acquireErr4(done) {
+    var basePath = testPath(suitePath, 13);
     var lock1 = new Lock(client, basePath);
     var lock2 = new Lock(client, basePath);
     var stub = sandbox.stub(client.zk, 'getData', getDataStub);
@@ -403,8 +412,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should return delete error instead of acquire error if it happens', function testErrorDeleteNode(done) {
-    var ourPath = testPath(suitePath, 16);
+  it('should return delete node error', function acquireErr5(done) {
+    var ourPath = testPath(suitePath, 14);
     var lock = new Lock(client, ourPath);
     var stubGetChildren = sandbox.stub(client.zk, 'getChildren');
     var getChildrenError = new Exception(Exception.NOT_EMPTY, 'getChildren() error', TypeError);
@@ -438,8 +447,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should try acquire if watched node deleted before getData()', function testGetData(done) {
-    var basePath = '/test/lock/14';
+  it('should acquire when getData() receives error', function acquire1(done) {
+    var basePath = testPath(suitePath, 15);
     var stub = sandbox.stub(client.zk, 'getData', getDataStub);
     var lock1 = new Lock(client, basePath);
     var lock2 = new Lock(client, basePath);
@@ -468,8 +477,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should make only one acquire attempt #1', function testZeroTimeout(done) {
-    var ourPath = testPath(suitePath, 15);
+  it('should make only one acquire attempt #1', function acquire0Timer1(done) {
+    var ourPath = testPath(suitePath, 16);
     var lock = new Lock(client, ourPath);
     lock.acquire(0, afterAcquire);
 
@@ -479,8 +488,8 @@ describe('Lock', function lockTestSuite() {
     }
   });
 
-  it('should make only one acquire attempt #2', function testZeroTimeout(done) {
-    var ourPath = testPath(suitePath, 16);
+  it('should make only one acquire attempt #2', function acquire0Timer2(done) {
+    var ourPath = testPath(suitePath, 17);
     var lock1 = new Lock(client, ourPath);
     var lock2 = new Lock(client, ourPath);
     lock1.acquire(0, afterFirstAcquire);
@@ -494,6 +503,189 @@ describe('Lock', function lockTestSuite() {
       expect(err).to.exist;
       expect(err).to.be.an.instanceof(Rorschach.Errors.TimeoutError);
       lock1.release(done);
+    }
+  });
+
+  it('should call exit() only once #1', function watchCallbackRace(done) {
+    var ourPath = testPath(suitePath, 18);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
+    var stubGetData;
+    var getChildrenCalled = false;
+    var getChildrenCallback;
+    var getChildrenOriginal;
+
+    lock1.acquire(afterAcquire);
+
+    // Callback of 1st lock acquire creates a stub for getData() and starts
+    // acquire for 2nd lock
+    function afterAcquire(err) {
+      assert.ifError(err);
+
+      stubGetData = sandbox.stub(client.zk, 'getData', getDataStub);
+      lock2.acquire(afterSecondAcquire);
+    }
+
+    // getData() stub simulates near-consecutive call of callback and watcher
+    // leading to getChildren() called twice before any of its callbacks is
+    // executed. Also getChildren() is replaced with a stub.
+    function getDataStub(path, watcher, callback) {
+      stubGetData.restore();
+      lock1.release(callThings);
+
+      getChildrenOriginal = client.zk.getChildren;
+      client.zk.getChildren = getChildrenStub;
+
+      function callThings(err) {
+        assert.ifError(err);
+
+        var event = new Event(Event.NODE_DELETED, 'lol', path);
+        var error = new Exception(Exception.NO_NODE, 'lol', Error);
+        watcher(event);
+        callback(error);
+      }
+    }
+
+    // getChildren() stub runs original operation with one difference: it
+    // postpones calling of second callback
+    function getChildrenStub(path, callback) {
+      var res = [Lock.LOCK_NAME + '0000000001'];
+
+      if (getChildrenCalled) {
+        getChildrenCallback = callback.bind(null, null, res);
+      }
+      else {
+        getChildrenCalled = true;
+        setImmediate(callback, null, res);
+      }
+    }
+
+    // 2nd lock acquire callback tries to executed last getChildren() callback
+    function afterSecondAcquire(err) {
+      assert.ifError(err);
+      client.zk.getChildren = getChildrenOriginal;
+      expect(getChildrenCallback).to.not.throw();
+      lock2.release(afterRelease);
+    }
+
+    function afterRelease(err) {
+      assert.ifError(err);
+      done();
+    }
+  });
+
+  it('should call exit() only once #2', function timerCallbackRace(done) {
+    var ourPath = testPath(suitePath, 19);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
+    var stubGetData;
+    var stubGetChildren;
+    var getChildrenCallback;
+    var clock;
+
+    lock1.acquire(afterAcquire);
+
+    // Callback of 1st lock acquire creates a stub for getData() and starts
+    // acquire for 2nd lock with 10000ms timeout. Also Sinon.JS fake timers are
+    // used to simulate later exceeding of timeout.
+    function afterAcquire(err) {
+      assert.ifError(err);
+
+      clock = sinon.useFakeTimers('setTimeout');
+      stubGetData = sandbox.stub(client.zk, 'getData', getDataStub);
+      lock2.acquire(10000, afterSecondAcquire);
+    }
+
+    // getData() stub simulates call of callback with error leading to
+    // call of getChildren(). Also it creates getChildren() stub.
+    function getDataStub(path, watcher, callback) {
+      stubGetData.restore();
+      lock1.release(callThings);
+
+      function callThings(err) {
+        assert.ifError(err);
+
+        var error = new Exception(Exception.NO_NODE, 'lol', Error);
+        stubGetChildren = sandbox.stub(client.zk, 'getChildren',
+          getChildrenStub);
+        callback(error);
+      }
+    }
+
+    // getChildren() stub simulates running out of time and saves its callback
+    // for further execution
+    function getChildrenStub(path, callback) {
+      stubGetChildren.restore();
+      clock.tick(10000);
+
+      var list = [Lock.LOCK_NAME + '0000000001'];
+      getChildrenCallback = callback.bind(null, null, list);
+    }
+
+    // 2nd lock acquire callback tries to execute getChildren() callback
+    function afterSecondAcquire(err) {
+      clock.restore();
+      expect(err.name).to.equal('TimeoutError');
+      expect(getChildrenCallback).to.not.throw();
+      done();
+    }
+  });
+
+  it('should call exit() only once #3', function timerWatcherRace(done) {
+    var ourPath = testPath(suitePath, 20);
+    var lock1 = new Lock(client, ourPath);
+    var lock2 = new Lock(client, ourPath);
+    var stubGetData;
+    var stubGetChildren;
+    var getChildrenCallback;
+    var clock;
+
+    lock1.acquire(afterAcquire);
+
+    // Callback of 1st lock acquire creates a stub for getData() and starts
+    // acquire for 2nd lock with 10000ms timeout. Also Sinon.JS fake timers
+    // are used to simulate later exceeding of timeout.
+    function afterAcquire(err) {
+      assert.ifError(err);
+
+      clock = sinon.useFakeTimers('setTimeout');
+      stubGetData = sandbox.stub(client.zk, 'getData', getDataStub);
+      lock2.acquire(10000, afterSecondAcquire);
+    }
+
+    // getData() stub simulates call of watcher with event leading to call of
+    // getChildren(). Also it creates getChildren() stub.
+    function getDataStub(path, watcher, callback) {
+      stubGetData.restore();
+      lock1.release(callThings);
+
+      function callThings(err) {
+        assert.ifError(err);
+
+        var event = new Event(Event.NODE_DELETED, 'lol', path);
+        stubGetChildren = sandbox.stub(client.zk, 'getChildren',
+          getChildrenStub);
+        watcher(event);
+        callback();
+      }
+    }
+
+    // getChildren() stub simulates running out of time and saves its callback
+    // for further execution
+    function getChildrenStub(path, callback) {
+      stubGetChildren.restore();
+      clock.tick(10000);
+
+      var list = [Lock.LOCK_NAME + '0000000001'];
+      getChildrenCallback = callback.bind(null, null, list);
+    }
+
+    // 2nd lock acquire callback tries to execute getChildren() callback
+    function afterSecondAcquire(err) {
+      clock.restore();
+      expect(err.name).to.equal('TimeoutError');
+      expect(getChildrenCallback).to.not.throw();
+      done();
     }
   });
 });
