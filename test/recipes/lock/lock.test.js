@@ -1,4 +1,3 @@
-/*jshint -W030*/
 'use strict';
 
 var testPath = require('../../support/utils').testPath;

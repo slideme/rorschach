@@ -1,5 +1,3 @@
-# Changelog
-
 ## 0.7.1
 
 * Small fixes

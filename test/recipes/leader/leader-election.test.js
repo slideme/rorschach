@@ -1,4 +1,3 @@
-/*jshint -W030*/
 'use strict';
 
 var CreateBuilder = require('../../../lib/builders/create');
@@ -478,7 +477,6 @@ describe('LeaderElection', function leaderElectionTestSuite() {
     function forPathStub(path, data, callback) {
       stubCreate.restore();
       participant.ourPath = '/wow/lol/you/kidding/man';
-      //jshint -W040
       this.forPath(path, data, callback);
     }
 

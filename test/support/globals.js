@@ -1,3 +1,4 @@
+/*eslint strict: [2, "never"]*/
 
 assert = require('chai').assert;
 expect = require('chai').expect;

@@ -1,5 +1,3 @@
-/*jshint -W030*/
-/*jshint -W064*/
 'use strict';
 
 var ConnectionState = Rorschach.ConnectionState;

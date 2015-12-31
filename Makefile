@@ -2,7 +2,7 @@ REPORTER = spec
 SOURCES = $(wildcard lib/*.js) $(wildcard test/*.js) index.js
 
 lint:
-	jshint --config .jshintrc $(SOURCES)
+	eslint $(SOURCES)
 	jscs --config .jscsrc $(SOURCES)
 
 test:
