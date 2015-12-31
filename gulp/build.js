@@ -1,6 +1,7 @@
 'use strict';
 
 const changelog = require('gulp-conventional-changelog');
+const del = require('del');
 const detectBump = require('conventional-recommended-bump');
 const exec = require('child_process').exec;
 const fs = require('fs');
@@ -8,7 +9,6 @@ const git = require('gulp-git');
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const rename = require('gulp-rename');
-const rimraf = require('gulp-rimraf');
 const runSequence = require('run-sequence');
 
 const PRESET = 'angular';
@@ -78,7 +78,7 @@ gulp.task('bump:unclone-package', () => {
     .pipe(gulp.dest('.'));
 });
 
-gulp.task('bump:clean', () => gulp.src('_package.json').pipe(rimraf()));
+gulp.task('bump:clean', () => del(['_package.json']));
 
 gulp.task('bump:version', (callback) => {
   exec(`npm version ${BUMP} -m "chore(release): ${VERSION}"`, callback);

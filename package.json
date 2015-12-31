@@ -29,6 +29,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "conventional-recommended-bump": "0.0.3",
+    "del": "^2.2.0",
     "eslint": "^1.10.3",
     "gulp": "^3.9.0",
     "gulp-conventional-changelog": "^0.7.0",
@@ -37,7 +38,6 @@
     "gulp-jscs": "^3.0.2",
     "gulp-jsonlint": "^1.1.1",
     "gulp-rename": "^1.2.2",
-    "gulp-rimraf": "^0.2.0",
     "gulp-util": "^3.0.7",
     "istanbul": "^0.4.1",
     "jscs": "^2.6.0",
