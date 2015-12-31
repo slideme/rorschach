@@ -97,8 +97,8 @@ gulp.task('bump', ['lint'], (callback) => {
     'bump:commit-changelog',
     'bump:unclone-package',
     'bump:clean',
-    /*'bump:version',
-    'bump:publish',*/
+    'bump:version',
+    /*'bump:publish',*/
     callback
   );
 });
